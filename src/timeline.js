@@ -25,6 +25,41 @@ export default class Timeline {
     // Filter State
     this.filterText = '';
 
+    // i18n
+    this.translations = {
+      en: {
+        filterPlaceholder: "Filter versions...",
+        legendOssTitle: "OSS support",
+        legendOssDesc: "Free security updates and bugfixes.",
+        legendEntTitle: "Enterprise support",
+        legendEntDesc: "Enterprise support from experts during the OSS timeline, plus extended support after OSS End-Of-Life.",
+        legendEolTitle: "Out of Support",
+        legendEolDesc: "Generation has reached end of life. No further updates are provided.",
+        showLess: "Show Less",
+        showMore: "Show {n} more versions",
+        ossSupport: "OSS Support",
+        entSupport: "Enterprise Support",
+        toggleDarkMode: "Toggle Dark Mode",
+        viewReleaseNotes: "View Release Notes for {v}"
+      },
+      fr: {
+        filterPlaceholder: "Filtrer les versions...",
+        legendOssTitle: "Support OSS",
+        legendOssDesc: "Mises à jour de sécurité et corrections de bugs gratuites.",
+        legendEntTitle: "Support Entreprise",
+        legendEntDesc: "Support entreprise par des experts pendant la période OSS, plus support étendu après la fin de vie OSS.",
+        legendEolTitle: "Fin de support",
+        legendEolDesc: "Cette version a atteint sa fin de vie. Plus aucune mise à jour n'est fournie.",
+        showLess: "Voir moins",
+        showMore: "Voir {n} versions supplémentaires",
+        ossSupport: "Support OSS",
+        entSupport: "Support Entreprise",
+        toggleDarkMode: "Changer le mode sombre",
+        viewReleaseNotes: "Voir les notes de version pour {v}"
+      }
+    };
+    this.locale = options.locale || this.detectLanguage();
+
     try {
       this.init();
     } catch (e) {
@@ -35,6 +70,19 @@ export default class Timeline {
       err.textContent = `Error initializing timeline: ${e.message}`;
       if (this.root) this.root.prepend(err);
     }
+  }
+
+  detectLanguage() {
+    const lang = (navigator.language || navigator.userLanguage || 'en').split('-')[0];
+    return this.translations[lang] ? lang : 'en';
+  }
+
+  t(key, params = {}) {
+    let text = (this.translations[this.locale] || this.translations['en'])[key] || key;
+    Object.keys(params).forEach(p => {
+      text = text.replace(`{${p}}`, params[p]);
+    });
+    return text;
   }
 
   init() {
@@ -115,12 +163,12 @@ export default class Timeline {
 
     // Placeholder simulation
     if (!this.filterText) {
-      input.textContent = 'Filter versions...';
+      input.textContent = this.t('filterPlaceholder');
       input.style.color = 'var(--text-secondary)';
     }
 
     input.onfocus = () => {
-      if (input.textContent === 'Filter versions...') {
+      if (input.textContent === this.t('filterPlaceholder')) {
         input.textContent = '';
         input.style.color = 'var(--text-primary)';
       }
@@ -128,7 +176,7 @@ export default class Timeline {
 
     input.onblur = () => {
       if (input.textContent.trim() === '') {
-        input.textContent = 'Filter versions...';
+        input.textContent = this.t('filterPlaceholder');
         input.style.color = 'var(--text-secondary)';
       }
     };
@@ -147,7 +195,7 @@ export default class Timeline {
 
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-        const val = input.textContent === 'Filter versions...' ? '' : input.textContent;
+        const val = input.textContent === this.t('filterPlaceholder') ? '' : input.textContent;
         this.filterText = val.toLowerCase().trim();
         this.updateVisibility();
       }, 300);
@@ -167,7 +215,7 @@ export default class Timeline {
     const btn = document.createElement('button');
     btn.className = 'theme-toggle-btn';
     btn.type = 'button';
-    btn.title = 'Toggle Dark Mode';
+    btn.title = this.t('toggleDarkMode');
 
     const iconMoon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`;
     const iconSun = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
@@ -203,22 +251,22 @@ export default class Timeline {
         <div class="legend-block oss">
           <div class="legend-icon"></div>
           <div>
-            <h3>OSS support</h3>
-            <p>Free security updates and bugfixes.</p>
+            <h3>${this.t('legendOssTitle')}</h3>
+            <p>${this.t('legendOssDesc')}</p>
           </div>
         </div>
         <div class="legend-block commercial">
           <div class="legend-icon"></div>
           <div>
-            <h3>Enterprise support</h3>
-            <p>Enterprise support from experts during the OSS timeline, plus extended support after OSS End-Of-Life.</p>
+            <h3>${this.t('legendEntTitle')}</h3>
+            <p>${this.t('legendEntDesc')}</p>
           </div>
         </div>
         <div class="legend-block expired">
           <div class="legend-icon"></div>
           <div>
-            <h3>Out of Support</h3>
-            <p>Generation has reached end of life. No further updates are provided.</p>
+            <h3>${this.t('legendEolTitle')}</h3>
+            <p>${this.t('legendEolDesc')}</p>
           </div>
         </div>
       </div>
@@ -305,7 +353,7 @@ export default class Timeline {
         link.className = 'version-link';
         link.target = '_blank';
         link.textContent = item.version;
-        link.title = `View Release Notes for ${item.version}`;
+        link.title = this.t('viewReleaseNotes', { v: item.version });
         label.appendChild(link);
       } else {
         label.textContent = item.version;
@@ -330,8 +378,8 @@ export default class Timeline {
       const track = document.createElement('div');
       track.className = 'track-container';
 
-      const ossBar = this.createBarSegment(item.ossStart, item.ossEnd, 'bar-oss', 'OSS Support');
-      const entBar = this.createBarSegment(item.ossStart, item.enterpriseEnd, 'bar-ent', 'Enterprise Support');
+      const ossBar = this.createBarSegment(item.ossStart, item.ossEnd, 'bar-oss', this.t('ossSupport'));
+      const entBar = this.createBarSegment(item.ossStart, item.enterpriseEnd, 'bar-ent', this.t('entSupport'));
 
       track.appendChild(entBar);
       track.appendChild(ossBar); // OSS foreground
@@ -405,9 +453,9 @@ export default class Timeline {
     const chevronUp = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>`;
 
     if (this.isExpanded) {
-      btn.innerHTML = `Show Less ${chevronUp}`;
+      btn.innerHTML = `${this.t('showLess')} ${chevronUp}`;
     } else {
-      btn.innerHTML = `Show ${remaining} more versions ${chevronDown}`;
+      btn.innerHTML = `${this.t('showMore', { n: remaining })} ${chevronDown}`;
     }
 
     btn.onclick = () => {

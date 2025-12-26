@@ -12,6 +12,12 @@ export interface TimelineOptions {
      * @default 3
      */
     visibleCount?: number;
+
+    /**
+     * Preferred locale for translations ('en' or 'fr'). 
+     * Defaults to browser language.
+     */
+    locale?: 'en' | 'fr' | string;
 }
 
 export default class Timeline {

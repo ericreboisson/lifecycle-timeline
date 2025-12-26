@@ -39,12 +39,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/votre-pseudo/lifecycle-timeline.git"
+    "url": "git+https://github.com/ericreboisson/lifecycle-timeline.git"
   },
   "bugs": {
-    "url": "https://github.com/votre-pseudo/lifecycle-timeline/issues"
+    "url": "https://github.com/ericreboisson/lifecycle-timeline/issues"
   },
-  "homepage": "https://github.com/votre-pseudo/lifecycle-timeline#readme",
+  "homepage": "https://github.com/ericreboisson/lifecycle-timeline#readme",
   "devDependencies": {
     "vite": "^7.3.0"
   }

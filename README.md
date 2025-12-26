@@ -76,6 +76,7 @@ Each version object in the `data` array should follow this structure:
 
 ### Options
 - `visibleCount`: (Number, default: `3`) Number of versions to show before the "Show More" button appears.
+- `locale`: (String, default: browser detect) Preferred language for the UI. Supported: `'en'`, `'fr'`.
 
 ## 🎨 Theming
 The component uses CSS variables for easy customization. You can override them in your own CSS:
