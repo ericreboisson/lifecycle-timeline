@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lifecycle Timeline Demo</title>
+    <!-- Using Inter font for premium look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            max-width: 800px;
+        }
+
+        h1 {
+            color: #1e293b;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        [data-theme="dark"] body {
+            background-color: #0f172a;
+        }
+
+        [data-theme="dark"] .container {
+            background: #1e293b;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+        }
+
+        [data-theme="dark"] h1 {
+            color: #f8fafc;
+        }
+
+        [data-theme="dark"] p {
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Lifecycle Timeline</h1>
+        <p>A beautiful, premium JS timeline component for visualizing product lifecycles, OSS support, and enterprise
+            support dates.</p>
+    </div>
+
+    <div class="container">
+        <div id="timeline-root"></div>
+    </div>
+
+    <script type="module">
+        // Import directly from src for development
+        import Timeline from './src/timeline.js';
+
+        const data = [
+            {
+                version: "6.0.x (Current)",
+                ossStart: "2025-01-01",
+                ossEnd: "2026-08-20",
+                enterpriseEnd: "2027-02-15",
+                releaseNotesUrl: "https://example.com/notes"
+            },
+            {
+                version: "5.2.x",
+                ossStart: "2024-06-10",
+                ossEnd: "2025-11-30",
+                enterpriseEnd: "2027-12-01",
+                releaseNotesUrl: "https://example.com/notes"
+            },
+            {
+                version: "4.4.x",
+                ossStart: "2023-06-10",
+                ossEnd: "2023-11-30",
+                enterpriseEnd: "2024-12-01"
+            },
+            {
+                version: "3.4.x (Extended)",
+                ossStart: "2020-06-10",
+                ossEnd: "2021-11-30",
+                enterpriseEnd: "2023-12-31"
+            },
+            {
+                version: "2.1.x (EOL)",
+                ossStart: "2018-01-01",
+                ossEnd: "2019-12-31",
+                enterpriseEnd: "2020-06-30"
+            }
+        ];
+
+        new Timeline('timeline-root', data, { visibleCount: 3 });
+    </script>
+</body>
+
+</html>
