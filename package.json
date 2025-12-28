@@ -58,7 +58,7 @@
   "homepage": "https://github.com/ericreboisson/lifecycle-timeline#readme",
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
-    "jsdom": "^27.4.0",
+    "jsdom": "^24.1.3",
     "vite": "^7.3.0",
     "vitest": "^4.0.16"
   }
