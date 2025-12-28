@@ -225,11 +225,21 @@ export default class Timeline {
    */
   updateTableVisibility() {
     const filtered = this.tableRows.filter(r => r.version.includes(this.filterText));
-    this.tableRows.forEach(r => r.el.style.display = 'none');
+
+    // Update highlights in table badges
+    this.tableRows.forEach(r => {
+      const badge = r.el.querySelector('.table-badge');
+      badge.innerHTML = this.highlight(r.versionOriginal || r.version);
+      r.el.classList.remove('row-visible');
+      r.el.classList.add('row-hidden');
+    });
 
     const hasMore = this.filterText === '' && filtered.length > this.visibleCount;
     const toShow = (hasMore && !this.isTableExpanded) ? filtered.slice(0, this.visibleCount) : filtered;
-    toShow.forEach(r => r.el.style.display = 'table-row');
+    toShow.forEach(r => {
+      r.el.classList.remove('row-hidden');
+      r.el.classList.add('row-visible');
+    });
 
     this.tableToggleContainer.innerHTML = '';
     if (hasMore) {
@@ -523,12 +533,16 @@ export default class Timeline {
       } else {
         label.innerHTML = this.highlight(r.versionOriginal || r.version);
       }
-      r.el.style.display = 'none';
+      r.el.classList.remove('row-visible');
+      r.el.classList.add('row-hidden');
     });
 
     const hasMore = this.filterText === '' && filtered.length > this.visibleCount;
     const toShow = (hasMore && !this.isExpanded) ? filtered.slice(0, this.visibleCount) : filtered;
-    toShow.forEach(r => r.el.style.display = 'flex');
+    toShow.forEach(r => {
+      r.el.classList.remove('row-hidden');
+      r.el.classList.add('row-visible');
+    });
 
     if (this.showTable) this.updateTableVisibility();
 

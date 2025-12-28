@@ -554,6 +554,35 @@ body {
     }
 }
 
+/* Smooth Expansion Animations */
+.timeline-row,
+.timeline-table tr {
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.row-hidden {
+    display: none !important;
+    /* Fallback but we'll try to refine this */
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.row-visible {
+    display: flex !important;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.timeline-table tr.row-visible {
+    display: table-row !important;
+}
+
+/* Animations for containers */
+.timeline-tracks,
+.timeline-table tbody {
+    transition: max-height 0.5s ease-in-out;
+}
+
 /* Table Styles */
 .timeline-table-container {
     margin-top: 1rem;

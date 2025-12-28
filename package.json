@@ -34,8 +34,17 @@
     "support",
     "oss",
     "enterprise",
+    "js",
+    "javascript",
+    "react",
     "vanilla-js",
-    "premium-ui"
+    "premium-ui",
+    "accessibility",
+    "i18n",
+    "responsive",
+    "product-management",
+    "visualizer",
+    "support-lifecycle"
   ],
   "author": "Eric REBOISSON",
   "license": "MIT",
