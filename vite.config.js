@@ -26,4 +26,8 @@ export default defineConfig({
     },
     cssCodeSplit: false,
   },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+  },
 });

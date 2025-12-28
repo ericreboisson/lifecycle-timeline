@@ -1,9 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { JSDOM } from 'jsdom';
 import Timeline from './timeline.js';
 
 describe('Timeline Component', () => {
-    let dom;
     let element;
 
     const mockData = [
@@ -16,11 +14,7 @@ describe('Timeline Component', () => {
     ];
 
     beforeEach(() => {
-        dom = new JSDOM('<!DOCTYPE html><html><body><div id="timeline"></div></body></html>');
-        Object.defineProperty(global, 'window', { value: dom.window, writable: true, configurable: true });
-        Object.defineProperty(global, 'document', { value: dom.window.document, writable: true, configurable: true });
-        Object.defineProperty(global, 'navigator', { value: dom.window.navigator, writable: true, configurable: true });
-        Object.defineProperty(global, 'HTMLElement', { value: dom.window.HTMLElement, writable: true, configurable: true });
+        document.body.innerHTML = '<div id="timeline"></div>';
         element = document.getElementById('timeline');
     });
 
