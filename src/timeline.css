@@ -313,23 +313,60 @@ body {
 }
 
 /* Tooltips */
-[title] {
-    cursor: help;
+.timeline-tooltip-overlay {
+    position: absolute;
+    background: var(--tooltip-bg);
+    color: var(--text-primary);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    box-shadow: 0 10px 15px -3px var(--tooltip-shadow), 0 4px 6px -4px var(--tooltip-shadow);
+    border: 1px solid var(--border-color);
+    pointer-events: none;
+    z-index: 10000;
+    transition: opacity 0.15s ease-out;
+    line-height: 1.4;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .page-container {
-        padding: 1rem;
-    }
+.tooltip-header {
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--current-date);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
 
-    .timeline-wrapper {
-        overflow-x: scroll;
-    }
+.tooltip-date strong {
+    color: var(--text-secondary);
+}
 
-    .track-container {
-        min-width: 600px;
-    }
+/* Animations & Transitions */
+.timeline-row {
+    transition: opacity 0.3s ease, transform 0.3s ease, height 0.3s ease;
+}
+
+.timeline-row[style*="display: none"] {
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.bar-segment {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bar-segment:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.bar-segment:focus-visible {
+    outline: 2px solid var(--text-primary);
+    outline-offset: -2px;
+    z-index: 100;
+}
+
+.track-container {
+    transition: background-color 0.3s ease;
 }
 
 /* Legend - Rich Style */
@@ -338,7 +375,7 @@ body {
     padding: 24px;
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -385,7 +422,44 @@ body {
     background-color: var(--bg-track);
 }
 
-/* Toggle Button */
+/* Toolbar & Filters */
+.timeline-toolbar {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-bottom: 24px;
+    gap: 16px;
+}
+
+.timeline-filter-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 24px;
+    max-width: 400px;
+    flex-grow: 1;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.timeline-filter-container:focus-within {
+    border-color: var(--current-date);
+    box-shadow: 0 8px 20px rgba(8, 109, 195, 0.1);
+}
+
+.timeline-filter-input {
+    border: none;
+    outline: none;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    background: transparent;
+    width: 100%;
+}
+
+/* Buttons */
 .timeline-toggle-btn {
     display: flex;
     align-items: center;
@@ -405,56 +479,12 @@ body {
 .timeline-toggle-btn:hover {
     background: var(--bg-page);
     border-color: var(--text-secondary);
+    transform: translateY(-1px);
 }
 
-.timeline-toggle-btn svg {
-    display: block;
-}
-
-/* Toolbar (Header) */
-.timeline-toolbar {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    margin-bottom: 20px;
-    gap: 16px;
-}
-
-/* Filter Container */
-.timeline-filter-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    padding: 8px 16px;
-    border-radius: 24px;
-    max-width: 320px;
-    flex-grow: 1;
-    transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.timeline-filter-container:focus-within {
-    border-color: var(--current-date);
-    box-shadow: 0 4px 12px rgba(8, 109, 195, 0.1);
-}
-
-.search-icon {
-    color: var(--text-secondary);
-    display: flex;
-    align-items: center;
-    opacity: 0.7;
-}
-
-.timeline-filter-input {
-    border: none;
-    outline: none;
-    font-size: 0.95rem;
-    color: var(--text-primary);
-    background: transparent;
-    width: 100%;
-    min-height: 24px;
+.timeline-toggle-btn:focus-visible {
+    outline: 2px solid var(--current-date);
+    outline-offset: 2px;
 }
 
 /* Theme Toggle Button */
@@ -474,7 +504,12 @@ body {
     cursor: pointer;
     transition: all 0.2s ease;
     z-index: 1000;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle-btn:focus-visible {
+    outline: 2px solid var(--current-date);
+    outline-offset: 2px;
 }
 
 /* Ensure the root is relative for the absolute button */
@@ -484,5 +519,27 @@ body {
 
 .theme-toggle-btn:hover {
     background-color: var(--bg-track);
-    transform: scale(1.05);
+    transform: scale(1.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .timeline-wrapper {
+        padding-left: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        padding: 1rem;
+    }
+
+    .timeline-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .timeline-filter-container {
+        max-width: none;
+    }
 }
