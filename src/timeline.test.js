@@ -17,10 +17,10 @@ describe('Timeline Component', () => {
 
     beforeEach(() => {
         dom = new JSDOM('<!DOCTYPE html><html><body><div id="timeline"></div></body></html>');
-        global.window = dom.window;
-        global.document = dom.window.document;
-        global.navigator = dom.window.navigator;
-        global.HTMLElement = dom.window.HTMLElement;
+        Object.defineProperty(global, 'window', { value: dom.window, writable: true, configurable: true });
+        Object.defineProperty(global, 'document', { value: dom.window.document, writable: true, configurable: true });
+        Object.defineProperty(global, 'navigator', { value: dom.window.navigator, writable: true, configurable: true });
+        Object.defineProperty(global, 'HTMLElement', { value: dom.window.HTMLElement, writable: true, configurable: true });
         element = document.getElementById('timeline');
     });
 
