@@ -46,7 +46,6 @@ export default class Timeline {
     this.visibleCount = options.visibleCount || 3;
     this.showTable = options.showTable !== false;
     this.isExpanded = false;
-    this.isTableExpanded = false;
     this.theme = 'light';
     this.filterText = '';
 
@@ -235,7 +234,7 @@ export default class Timeline {
     });
 
     const hasMore = this.filterText === '' && filtered.length > this.visibleCount;
-    const toShow = (hasMore && !this.isTableExpanded) ? filtered.slice(0, this.visibleCount) : filtered;
+    const toShow = (hasMore && !this.isExpanded) ? filtered.slice(0, this.visibleCount) : filtered;
     toShow.forEach(r => {
       r.el.classList.remove('row-hidden');
       r.el.classList.add('row-visible');
@@ -244,9 +243,9 @@ export default class Timeline {
     this.tableToggleContainer.innerHTML = '';
     if (hasMore) {
       const btn = this.el('button', 'timeline-toggle-btn table-toggle', this.tableToggleContainer);
-      const icon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="${this.isTableExpanded ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}"></polyline></svg>`;
-      btn.innerHTML = this.isTableExpanded ? `${this.t('less')} ${icon}` : `${this.t('more', { n: filtered.length - this.visibleCount })} ${icon}`;
-      btn.onclick = () => { this.isTableExpanded = !this.isTableExpanded; this.updateTableVisibility(); };
+      const icon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="${this.isExpanded ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}"></polyline></svg>`;
+      btn.innerHTML = this.isExpanded ? `${this.t('less')} ${icon}` : `${this.t('more', { n: filtered.length - this.visibleCount })} ${icon}`;
+      btn.onclick = () => { this.isExpanded = !this.isExpanded; this.updateVisibility(); };
     }
   }
 

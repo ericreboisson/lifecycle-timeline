@@ -682,18 +682,5 @@ body {
 }
 
 .timeline-toggle-btn.table-toggle {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    color: var(--current-date);
-    font-weight: 600;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.timeline-toggle-btn.table-toggle:hover {
-    background: transparent;
-    text-decoration: underline;
-    transform: none;
+    margin-top: 10px;
 }
