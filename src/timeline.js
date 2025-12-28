@@ -10,7 +10,8 @@ const DEFAULT_TRANSLATIONS = {
     ossDesc: "Free security updates and bugfixes.",
     entDesc: "Expert support during OSS plus extended support after EOL.",
     eolDesc: "End of life. No further updates are provided.",
-    today: "Today's date: {date}"
+    today: "Today's date: {date}",
+    branch: "Branch", initial: "Initial Release", ossEnd: "End OSS", entEnd: "End Enterprise *"
   },
   fr: {
     filter: "Filtrer les versions...", oss: "Support OSS", ent: "Support Entreprise",
@@ -19,7 +20,8 @@ const DEFAULT_TRANSLATIONS = {
     ossDesc: "Mises à jour de sécurité et corrections de bugs gratuites.",
     entDesc: "Support pendant la période OSS plus support étendu après.",
     eolDesc: "Version en fin de vie. Plus de mises à jour.",
-    today: "Date du jour : {date}"
+    today: "Date du jour : {date}",
+    branch: "Version", initial: "Sortie initiale", ossEnd: "Fin OSS", entEnd: "Fin Entreprise *"
   }
 };
 
@@ -42,7 +44,9 @@ export default class Timeline {
 
     this.options = options;
     this.visibleCount = options.visibleCount || 3;
+    this.showTable = options.showTable !== false;
     this.isExpanded = false;
+    this.isTableExpanded = false;
     this.theme = 'light';
     this.filterText = '';
 
@@ -86,6 +90,10 @@ export default class Timeline {
     this.renderToolbar();
     this.renderThemeToggle();
 
+    if (this.showTable) {
+      this.tableContainer = this.el('div', 'timeline-table-container', this.root);
+    }
+
     this.wrapper = this.el('div', 'timeline-wrapper', this.root);
     // Added ARIA grid for structured data
     this.wrapper.setAttribute('role', 'grid');
@@ -104,9 +112,36 @@ export default class Timeline {
    * @param {Array<Object>} newData - The new data array.
    */
   updateData(newData) {
-    this.data = (newData || []).filter(item => item);
+    this.data = this.validateData(newData || []);
     this.calculateTimeRange();
     this.render();
+  }
+
+  /**
+   * Validates the input data.
+   * @param {Array<Object>} data - The data array to validate.
+   * @returns {Array<Object>} The validated and filtered data array.
+   */
+  validateData(data) {
+    return data.filter((item, index) => {
+      const required = ['version', 'ossStart', 'ossEnd'];
+      const missing = required.filter(key => !item[key]);
+
+      if (missing.length > 0) {
+        console.warn(`[Timeline] Missing fields for item at index ${index}: ${missing.join(', ')}`);
+        return false;
+      }
+
+      const dates = ['ossStart', 'ossEnd', 'enterpriseEnd'].filter(k => item[k]);
+      const invalidDates = dates.filter(k => isNaN(new Date(item[k]).getTime()));
+
+      if (invalidDates.length > 0) {
+        console.warn(`[Timeline] Invalid date format for item "${item.version}": ${invalidDates.join(', ')}`);
+        return false;
+      }
+
+      return true;
+    });
   }
 
   /**
@@ -129,14 +164,93 @@ export default class Timeline {
   }
 
   /**
+   * Renders the data table.
+   */
+  renderTable() {
+    const table = this.el('table', 'timeline-table', this.tableContainer);
+    table.setAttribute('aria-label', 'Project support');
+
+    const thead = this.el('thead', '', table);
+    const headerRow = this.el('tr', '', thead);
+    [this.t('branch'), this.t('initial'), this.t('ossEnd'), this.t('entEnd')].forEach(text => {
+      this.el('th', '', headerRow).textContent = text;
+    });
+
+    this.tableBody = this.el('tbody', '', table);
+    this.tableRows = this.data.map(item => this.createTableRow(item));
+
+    this.tableToggleContainer = this.el('div', 'timeline-table-toggle', this.tableContainer);
+    this.updateTableVisibility();
+  }
+
+  /**
+   * Creates a row for the data table.
+   * @param {Object} item - Version data.
+   */
+  createTableRow(item) {
+    const row = this.el('tr', '', this.tableBody);
+
+    // Status color
+    const now = Date.now(), s = new Date(item.ossStart).getTime(), e = new Date(item.ossEnd).getTime();
+    const ent = item.enterpriseEnd ? new Date(item.enterpriseEnd).getTime() : e;
+
+    const statusClass = now >= s && now <= e ? 'status-oss' : (now > e && now <= ent ? 'status-ent' : (now > ent ? 'status-expired' : ''));
+
+    const branchCell = this.el('td', '', row);
+    let badgeContent = `<span class="table-badge ${statusClass}">${item.versionOriginal || item.version}</span>`;
+
+    if (item.releaseNotesUrl) {
+      branchCell.innerHTML = `<a href="${item.releaseNotesUrl}" target="_blank" class="table-version-link">${badgeContent}</a>`;
+    } else {
+      branchCell.innerHTML = badgeContent;
+    }
+
+    const initialCell = this.el('td', '', row);
+    initialCell.textContent = item.ossStart;
+    if (now > s) initialCell.className = 'past-date';
+
+    const ossCell = this.el('td', '', row);
+    ossCell.textContent = item.ossEnd;
+    if (now > e) ossCell.className = 'past-date';
+
+    const entCell = this.el('td', '', row);
+    entCell.textContent = item.enterpriseEnd || item.ossEnd;
+    if (now > ent) entCell.className = 'past-date';
+
+    return { el: row, version: item.version.toLowerCase(), versionOriginal: item.versionOriginal || item.version };
+  }
+
+  /**
+   * Updates table visibility based on filter and visibleCount.
+   */
+  updateTableVisibility() {
+    const filtered = this.tableRows.filter(r => r.version.includes(this.filterText));
+    this.tableRows.forEach(r => r.el.style.display = 'none');
+
+    const hasMore = this.filterText === '' && filtered.length > this.visibleCount;
+    const toShow = (hasMore && !this.isTableExpanded) ? filtered.slice(0, this.visibleCount) : filtered;
+    toShow.forEach(r => r.el.style.display = 'table-row');
+
+    this.tableToggleContainer.innerHTML = '';
+    if (hasMore) {
+      const btn = this.el('button', 'timeline-toggle-btn table-toggle', this.tableToggleContainer);
+      const icon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="${this.isTableExpanded ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}"></polyline></svg>`;
+      btn.innerHTML = this.isTableExpanded ? `${this.t('less')} ${icon}` : `${this.t('more', { n: filtered.length - this.visibleCount })} ${icon}`;
+      btn.onclick = () => { this.isTableExpanded = !this.isTableExpanded; this.updateTableVisibility(); };
+    }
+  }
+
+  /**
    * Renders the entire timeline.
    */
   render() {
     // Clear dynamic content
+    if (this.showTable) this.tableContainer.innerHTML = '';
     this.axis.innerHTML = '';
     this.tracks.innerHTML = '';
     this.legendContainer.innerHTML = '';
 
+    if (this.showTable) this.renderTable();
     this.renderAxis();
 
     this.grid = this.el('div', 'grid-lines-container', this.tracks);
@@ -202,6 +316,21 @@ export default class Timeline {
    */
   hideTooltip() {
     if (this.tooltip) this.tooltip.style.display = 'none';
+  }
+
+  /**
+   * Highlights the search term in a given text.
+   * @param {string} text - The text to process.
+   * @returns {string} The HTML with highlighted segments.
+   */
+  highlight(text) {
+    if (!this.filterText) return text;
+    try {
+      const regex = new RegExp(`(${this.filterText})`, 'gi');
+      return text.replace(regex, '<mark class="highlight-match">$1</mark>');
+    } catch (e) {
+      return text;
+    }
   }
 
   /**
@@ -321,10 +450,13 @@ export default class Timeline {
 
     if (item.releaseNotesUrl) {
       const a = this.el('a', 'version-link', label);
-      a.href = item.releaseNotesUrl; a.target = '_blank'; a.textContent = item.version;
+      a.href = item.releaseNotesUrl; a.target = '_blank';
+      a.innerHTML = this.highlight(item.version);
       a.title = this.t('notes', { v: item.version });
       a.setAttribute('aria-label', this.t('notes', { v: item.version }));
-    } else label.textContent = item.version;
+    } else {
+      label.innerHTML = this.highlight(item.version);
+    }
 
     const track = this.el('div', 'track-container', row);
     track.setAttribute('role', 'gridcell');
@@ -332,7 +464,7 @@ export default class Timeline {
     track.appendChild(this.createBar(item, item.ossStart, item.enterpriseEnd || item.ossEnd, 'bar-ent', this.t('ent')));
     track.appendChild(this.createBar(item, item.ossStart, item.ossEnd, 'bar-oss', this.t('oss')));
 
-    return { el: row, version: item.version.toLowerCase() };
+    return { el: row, version: item.version.toLowerCase(), versionOriginal: item.version };
   }
 
   /**
@@ -381,11 +513,24 @@ export default class Timeline {
    */
   updateVisibility() {
     const filtered = this.rows.filter(r => r.version.includes(this.filterText));
-    this.rows.forEach(r => r.el.style.display = 'none');
+
+    // Update highlights in labels while filtering
+    this.rows.forEach(r => {
+      const label = r.el.querySelector('.version-label');
+      const link = label.querySelector('.version-link');
+      if (link) {
+        link.innerHTML = this.highlight(r.versionOriginal || r.version);
+      } else {
+        label.innerHTML = this.highlight(r.versionOriginal || r.version);
+      }
+      r.el.style.display = 'none';
+    });
 
     const hasMore = this.filterText === '' && filtered.length > this.visibleCount;
     const toShow = (hasMore && !this.isExpanded) ? filtered.slice(0, this.visibleCount) : filtered;
     toShow.forEach(r => r.el.style.display = 'flex');
+
+    if (this.showTable) this.updateTableVisibility();
 
     this.toggleContainer.innerHTML = '';
     if (hasMore) {

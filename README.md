@@ -7,7 +7,8 @@ A premium, interactive Vanilla JS component for visualizing product lifecycles, 
 
 ## ✨ Features
 
-- **Smart Filtering**: Real-time search to filter versions.
+- **Interactive Table**: A clear data table between the filter and tracks for quick reference.
+- **Smart Filtering**: Real-time search to filter versions across both table and timeline.
 - **Dark Mode**: Native support with a persistent toggle.
 - **Rich Legend**: Detailed explanation of support states.
 - **Responsive Design**: Works on all screen sizes with horizontal scroll support.
@@ -58,47 +59,60 @@ new Timeline('timeline-root', data, { visibleCount: 3 });
 </script>
 ```
 
-## ⚙️ Configuration
+## ⚙️ Configuration & API
 
 ### Constructor
 `new Timeline(elementId, data, options)`
 
-| Argument | Type | Description |
-| :--- | :--- | :--- |
-| `elementId` | `string` | The ID of the container element. |
-| `data` | `Array` | List of version objects. |
-| `options` | `Object` | Optional configuration. |
+#### `options` Object
 
-### Data Schema
-Each version object in the `data` array should follow this structure:
-- `version`: (String) Version name/number.
-- `ossStart`: (String) Start date of OSS support (YYYY-MM-DD).
-- `ossEnd`: (String) End date of OSS support (YYYY-MM-DD).
-- `enterpriseEnd`: (String) End date of Enterprise support (YYYY-MM-DD).
-- `releaseNotesUrl`: (String, Optional) Link to release notes.
+| Property | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `visibleCount` | `number` | `3` | Initial versions shown before "Show More" appears. |
+| `locale` | `string` | `auto` | UI language (`'en'`, `'fr'`). |
+| `i18n` | `object` | `{}` | Custom translations or new languages. |
+| `showTable` | `boolean` | `true` | Shows/hides the summary data table. |
 
-### Options
-- `visibleCount`: (Number, default: `3`) Number of versions to show before the "Show More" button appears.
-- `locale`: (String, default: browser detect) Preferred language for the UI. Supported: `'en'`, `'fr'`.
+### 🌐 Internationalization (i18n)
+
+You can easily override existing labels or add new languages:
+
+```javascript
+new Timeline('timeline-root', data, {
+  locale: 'fr',
+  i18n: {
+    fr: {
+      filter: "Rechercher une version...",
+      more: "Afficher {n} de plus"
+    }
+  }
+});
+```
+
+### 🛡️ Data Validation
+The component automatically validates your data. If required fields (`version`, `ossStart`, `ossEnd`) are missing or if date formats are invalid, a warning is logged in the browser console.
 
 ## 🎨 Theming
-The component uses CSS variables for easy customization. You can override them in your own CSS:
-
+The component uses CSS variables for easy customization:
 ```css
 :root {
-  --accent-oss: #99e67d;     /* Color for OSS support bars */
-  --accent-ent: #ffe88e;     /* Color for Enterprise support bars */
-  --current-date: #086dc3;   /* Color for the current date line */
-  --bg-primary: #ffffff;     /* Light mode background */
-  --text-primary: #1e293b;   /* Light mode text */
+  --accent-oss: #99e67d;     /* Community support color */
+  --accent-ent: #ffe88e;     /* Enterprise support color */
+  --current-date: #086dc3;   /* Today's indicator color */
 }
 ```
 
-## 🛠 Development
+## 🧪 Testing
+We use **Vitest** for unit testing.
+```bash
+npm test
+```
 
-1. Install dependencies: `npm install`
-2. Start development server: `npm run dev`
-3. Build for production: `npm run build`
+## 🛠 Development
+1. `npm install`
+2. `npm run dev`
+3. `npm run build`
+4. `npm run release` (Build + Publish)
 
 ## 📄 License
 MIT © Eric REBOISSON

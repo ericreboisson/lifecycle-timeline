@@ -1,6 +1,6 @@
 {
   "name": "lifecycle-timeline",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "A beautiful, premium JS timeline component for visualizing product lifecycles, OSS support, and enterprise support dates.",
   "type": "module",
   "main": "./dist/timeline.umd.cjs",
@@ -22,7 +22,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
     "prepublishOnly": "npm run build",
     "release": "npm run build && npm publish"
   },
@@ -48,6 +48,9 @@
   },
   "homepage": "https://github.com/ericreboisson/lifecycle-timeline#readme",
   "devDependencies": {
-    "vite": "^7.3.0"
+    "@testing-library/dom": "^10.4.1",
+    "jsdom": "^27.4.0",
+    "vite": "^7.3.0",
+    "vitest": "^4.0.16"
   }
 }
