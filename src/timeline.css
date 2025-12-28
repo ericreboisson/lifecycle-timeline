@@ -418,7 +418,7 @@ body {
     background-color: var(--accent-ent);
 }
 
-.legend-block.expired .legend-icon {
+.legend-block.eol .legend-icon {
     background-color: var(--bg-track);
 }
 
