@@ -231,48 +231,6 @@ body {
     opacity: 0.9;
 }
 
-/* Custom Tooltip */
-.custom-tooltip {
-    position: fixed;
-    background: var(--tooltip-bg);
-    color: var(--text-primary);
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    pointer-events: none;
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.1s ease;
-    box-shadow: 0 10px 15px -3px var(--tooltip-shadow), 0 4px 6px -2px var(--tooltip-shadow);
-    border: 1px solid var(--border-color);
-    min-width: 200px;
-}
-
-.tooltip-header {
-    font-weight: 700;
-    margin-bottom: 4px;
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 4px;
-    margin-bottom: 8px;
-}
-
-.tooltip-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 4px;
-    font-size: 0.8rem;
-}
-
-.tooltip-label {
-    color: var(--text-secondary);
-}
-
-.tooltip-value {
-    font-weight: 500;
-}
-
 /* Grid Lines Container */
 .grid-lines-container {
     position: absolute;
@@ -281,7 +239,20 @@ body {
     left: 96px;
     right: 0;
     pointer-events: none;
-    z-index: 5;
+    z-index: 0;
+    /* Behind bars */
+}
+
+/* Indicators Container (for current date line) */
+.indicators-container {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 96px;
+    right: 0;
+    pointer-events: none;
+    z-index: 20;
+    /* Above bars and labels */
 }
 
 /* Current Date Line */

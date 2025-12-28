@@ -62,6 +62,7 @@ export default class Timeline {
     // Tracks
     this.tracks = this.el('div', 'timeline-tracks', this.wrapper);
     this.grid = this.el('div', 'grid-lines-container', this.tracks);
+    this.indicators = this.el('div', 'indicators-container', this.tracks);
     this.renderGrid();
     this.renderCurrentDateLine();
 
@@ -70,9 +71,6 @@ export default class Timeline {
 
     this.updateVisibility();
     this.renderLegend();
-
-    // Tooltip
-    this.tooltip = document.querySelector('.custom-tooltip') || this.el('div', 'custom-tooltip', document.body);
 
     this.renderThemeToggle();
   }
@@ -172,20 +170,9 @@ export default class Timeline {
     const bar = this.el('div', `bar-segment ${className}`);
     bar.style.left = `${((s - timelineStart) / timelineDur) * 100}%`;
     bar.style.width = `${((e - s) / timelineDur) * 100}%`;
+    bar.title = `${prefix}: ${startStr} to ${endStr}`;
 
-    bar.onmouseenter = (ev) => {
-      this.tooltip.textContent = `${prefix}: ${startStr} to ${endStr}`;
-      this.tooltip.style.opacity = '1';
-      this.moveTooltip(ev);
-    };
-    bar.onmousemove = (ev) => this.moveTooltip(ev);
-    bar.onmouseleave = () => this.tooltip.style.opacity = '0';
     return bar;
-  }
-
-  moveTooltip(e) {
-    this.tooltip.style.left = `${e.clientX + 12}px`;
-    this.tooltip.style.top = `${e.clientY + 12}px`;
   }
 
   updateVisibility() {
@@ -211,7 +198,7 @@ export default class Timeline {
     const offset = Date.now() - start;
     if (offset < 0 || offset > dur) return;
 
-    const line = this.el('div', 'current-date-indicator', this.grid);
+    const line = this.el('div', 'current-date-indicator', this.indicators);
     line.style.left = `${(offset / dur) * 100}%`;
     this.el('div', 'current-date-badge', line).textContent = new Date().toISOString().split('T')[0];
   }
