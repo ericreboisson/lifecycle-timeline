@@ -40,7 +40,8 @@
     --border-color: #374151;
     /* Gray-700 */
     --line-color: #374151;
-    --grid-line: #4b5563;
+    --grid-line: #6b7280;
+    /* Gray-500 */
     /* Gray-600 */
 
     --tooltip-bg: #1f2937;
@@ -239,8 +240,8 @@ body {
     left: 96px;
     right: 0;
     pointer-events: none;
-    z-index: 0;
-    /* Behind bars */
+    z-index: 5;
+    /* Above bars */
 }
 
 /* Indicators Container (for current date line) */
@@ -306,9 +307,9 @@ body {
     position: absolute;
     top: 0;
     bottom: 0;
-    border-left: 1px solid var(--grid-line);
-    opacity: 0.4;
-    z-index: 0;
+    border-left: 2px solid var(--grid-line);
+    opacity: 1.0;
+    z-index: 5;
     pointer-events: none;
 }
 
