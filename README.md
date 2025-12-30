@@ -27,6 +27,9 @@ A premium, interactive Vanilla JS component for visualizing product lifecycles, 
 npm install lifecycle-timeline
 ```
 
+> [!TIP]
+> Using Angular? Check out our [Angular Integration Guide](ANGULAR_INTEGRATION.md).
+
 ### Manual Installation
 Download the files from the `dist` folder: `timeline.js` (ESM), `timeline.umd.cjs` (UMD), and `timeline.css`.
 

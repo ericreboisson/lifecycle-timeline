@@ -4,7 +4,7 @@ import { resolve } from 'path';
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/timeline.js'),
+      entry: resolve(__dirname, 'src/index.js'),
       name: 'Timeline',
       // The proper extensions will be added
       fileName: 'timeline',
