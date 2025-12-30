@@ -2,6 +2,9 @@
 
 A premium, interactive Vanilla JS component for visualizing product lifecycles, including OSS support, Enterprise support, and EOL (End-Of-Life) dates.
 
+
+[**🚀 View Live Demo**](https://ericreboisson.github.io/lifecycle-timeline/)
+
 ![Lifecycle Timeline Screenshot](assets/screenshot.png)
 
 
