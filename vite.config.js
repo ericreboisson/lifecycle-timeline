@@ -9,7 +9,7 @@ export default defineConfig({
     // If it's a site build, we want Vite's default behavior (building index.html)
     // If not, we build the library
     lib: isSiteBuild ? false : {
-      entry: resolve(__dirname, 'src/timeline.js'),
+      entry: resolve(__dirname, 'src/index.js'),
       name: 'Timeline',
       fileName: 'timeline',
       formats: ['es', 'umd'],
