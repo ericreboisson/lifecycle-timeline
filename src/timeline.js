@@ -1,3 +1,5 @@
+import './timeline.css';
+
 /**
  * Default translations for the timeline component.
  * @type {Object<string, Object<string, string>>}

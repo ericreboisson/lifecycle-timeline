@@ -61,6 +61,47 @@ new Timeline('timeline-root', data, { visibleCount: 3 });
 </script>
 ```
 
+### Angular Integration
+
+To use this component in an Angular application, you can initialize it in the `ngAfterViewInit` lifecycle hook to ensure the DOM is ready.
+
+**Component Template (`app.component.html`):**
+```html
+<div id="timeline-container"></div>
+```
+
+**Component Logic (`app.component.ts`):**
+```typescript
+import { Component, AfterViewInit } from '@angular/core';
+import Timeline from 'lifecycle-timeline';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent implements AfterViewInit {
+  ngAfterViewInit() {
+    const data = [
+      {
+        version: "6.0.x",
+        ossStart: "2025-01-01",
+        ossEnd: "2026-08-20",
+        enterpriseEnd: "2027-02-15"
+      }
+    ];
+    
+    // Initialize the timeline
+    new Timeline('timeline-container', data, { locale: 'fr' });
+  }
+}
+```
+
+> [!TIP]
+> Don't forget to include the CSS! You can:
+> - Import it in your `styles.css`: `@import 'lifecycle-timeline/style.css';`
+> - Or in your `angular.json`: add `"node_modules/lifecycle-timeline/dist/timeline.css"` to the `styles` array.
+
 ## ⚙️ Configuration & API
 
 ### Constructor
