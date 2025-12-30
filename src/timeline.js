@@ -48,6 +48,7 @@ export default class Timeline {
     this.isExpanded = false;
     this.theme = 'light';
     this.filterText = '';
+    this.activeHighlight = null;
 
     // Merge default translations with custom ones
     this.translations = { ...DEFAULT_TRANSLATIONS, ...(options.i18n || {}) };
@@ -267,7 +268,7 @@ export default class Timeline {
     this.renderGrid();
     this.renderCurrentDateLine();
 
-    this.rows = this.data.map(item => this.createRow(item));
+    this.rows = this.data.map((item, index) => this.createRow(item, index));
     this.toggleContainer = this.el('div', 'timeline-more-toggle', this.tracks, {
       paddingTop: '10px',
       display: 'flex',
@@ -400,16 +401,40 @@ export default class Timeline {
    * Renders the legend section.
    */
   renderLegend() {
-    this.legendContainer.innerHTML = `
-      <div class="release-legend" role="complementary" aria-label="Support Legend">
-        ${['oss', 'ent', 'eol'].map(type => `
-          <div class="legend-block ${type === 'ent' ? 'commercial' : type}">
-            <div class="legend-icon" aria-hidden="true"></div>
-            <div><h3>${this.t(type)}</h3><p>${this.t(type + 'Desc')}</p></div>
-          </div>
-        `).join('')}
-      </div>
-    `;
+    this.legendContainer.innerHTML = '';
+    const container = this.el('div', 'release-legend', this.legendContainer);
+    container.setAttribute('role', 'complementary');
+    container.setAttribute('aria-label', 'Support Legend');
+
+    ['oss', 'ent', 'eol'].forEach(type => {
+      const item = this.el('div', `legend-block ${type === 'ent' ? 'commercial' : type}`, container);
+      item.classList.add('legend-item-reactive');
+      if (this.activeHighlight === type) item.classList.add('active-highlight');
+
+      item.innerHTML = `
+        <div class="legend-icon" aria-hidden="true"></div>
+        <div><h3>${this.t(type)}</h3><p>${this.t(type + 'Desc')}</p></div>
+      `;
+
+      item.onclick = () => this.highlightSegment(type);
+    });
+  }
+
+  /**
+   * Toggles highlighting for a specific segment type.
+   * @param {string} type - 'oss', 'ent', or 'eol'.
+   */
+  highlightSegment(type) {
+    this.activeHighlight = this.activeHighlight === type ? null : type;
+
+    // Reset classes on the root element
+    this.root.classList.remove('highlight-oss', 'highlight-ent', 'highlight-eol');
+
+    if (this.activeHighlight) {
+      this.root.classList.add(`highlight-${this.activeHighlight}`);
+    }
+
+    this.renderLegend();
   }
 
   /**
@@ -444,9 +469,11 @@ export default class Timeline {
    * @param {Object} item - The version data item.
    * @returns {Object} Metadata about the created row.
    */
-  createRow(item) {
-    const row = this.el('div', 'timeline-row', this.tracks);
+  createRow(item, index) {
+    const row = this.el('div', 'timeline-row row-entrance', this.tracks);
     row.setAttribute('role', 'row');
+    // Staggered animation delay
+    row.style.transitionDelay = `${index * 0.05}s`;
 
     const label = this.el('div', 'version-label', row);
     label.setAttribute('role', 'rowheader');
@@ -482,23 +509,26 @@ export default class Timeline {
    * @param {string} startStr - Start date string.
    * @param {string} endStr - End date string.
    * @param {string} className - CSS class.
-   * @param {string} prefix - Support type prefix for tooltip.
+   * @param {string} label - Support type label for tooltip.
    * @returns {HTMLElement} The created bar element.
    */
-  createBar(item, startStr, endStr, className, prefix) {
+  createBar(item, startStr, endStr, className, label) {
     const s = new Date(startStr).getTime(), e = new Date(endStr).getTime();
     const timelineStart = new Date(this.minYear, 0, 1).getTime();
     const timelineDur = new Date(this.maxYear, 11, 31).getTime() - timelineStart;
 
     const bar = this.el('div', `bar-segment ${className}`);
+    // Add specific type for highlighting
+    const type = className === 'bar-oss' ? 'segment-oss' : 'segment-ent';
+    bar.classList.add(type);
     bar.style.left = `${((s - timelineStart) / timelineDur) * 100}%`;
     bar.style.width = `${((e - s) / timelineDur) * 100}%`;
     bar.setAttribute('role', 'img');
-    bar.setAttribute('aria-label', `${item.version} ${prefix}: ${startStr} to ${endStr}`);
+    bar.setAttribute('aria-label', `${label}: ${item.version} (${startStr} to ${endStr})`);
     bar.tabIndex = 0; // Make focusable
 
     const tooltipContent = `
-      <div class="tooltip-header">${prefix} - ${item.version}</div>
+      <div class="tooltip-header">${label} - ${item.version}</div>
       <div class="tooltip-date"><strong>Du:</strong> ${startStr}</div>
       <div class="tooltip-date"><strong>Au:</strong> ${endStr}</div>
     `;

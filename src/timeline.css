@@ -128,6 +128,14 @@ body {
     position: relative;
     height: 36px;
     z-index: 1;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.timeline-row.row-visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .version-label {
@@ -143,12 +151,17 @@ body {
     margin-right: 16px;
     text-align: center;
     background-color: transparent;
-    transition: background-color 0.3s ease, color 0.3s ease;
-
-    /* Sticky Positioning */
+    cursor: pointer;
+    transition: all 0.3s ease;
     position: sticky;
     left: 0;
     z-index: 10;
+}
+
+.version-label:hover {
+    background-color: var(--bg-track);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Styled links for version labels */
@@ -239,6 +252,7 @@ body {
     bottom: 0;
     left: 96px;
     right: 0;
+
     pointer-events: none;
     z-index: 5;
     /* Above bars */
@@ -470,7 +484,62 @@ body {
     font-weight: 700;
 }
 
-/* Buttons */
+/* Legend */
+.release-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.legend-item-reactive {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+}
+
+.legend-item-reactive:hover {
+    background-color: var(--bg-track);
+    transform: translateY(-2px);
+}
+
+.legend-item-reactive.active-highlight {
+    background-color: var(--bg-track);
+    border-color: var(--grid-line);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Base highlight dimming logic */
+.bar-segment,
+.version-label {
+    transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+/* Highlight OSS */
+[class*="highlight-oss"] .bar-segment:not(.segment-oss),
+[class*="highlight-oss"] .version-label:not(.status-oss) {
+    opacity: 0.3;
+    filter: grayscale(0.5);
+}
+
+/* Highlight Enterprise */
+[class*="highlight-ent"] .bar-segment:not(.segment-ent),
+[class*="highlight-ent"] .version-label:not(.status-ent) {
+    opacity: 0.3;
+    filter: grayscale(0.5);
+}
+
+/* Highlight EOL */
+[class*="highlight-eol"] .bar-segment,
+[class*="highlight-eol"] .version-label:not(.status-expired) {
+    opacity: 0.3;
+    filter: grayscale(0.5);
+}
+
 .timeline-toggle-btn {
     display: flex;
     align-items: center;
@@ -679,9 +748,22 @@ body {
     background-color: var(--bg-card);
     border-top: 1px solid var(--border-color);
     border-bottom-left-radius: 12px;
-    border-bottom-right-radius: 12px;
+    margin-top: 40px;
 }
 
-.timeline-toggle-btn.table-toggle {
-    margin-top: 10px;
+/* Risk Badges */
+.risk-high {
+    color: #ef4444;
+}
+
+.risk-medium {
+    color: #f59e0b;
+}
+
+.risk-low {
+    color: #10b981;
+}
+
+[data-theme="dark"] .details-header {
+    background-color: #0f172a;
 }
