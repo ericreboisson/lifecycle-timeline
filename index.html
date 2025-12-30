@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lifecycle Timeline Demo</title>
+    <!-- Using Inter font for premium look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            max-width: 800px;
+        }
+
+        h1 {
+            color: #1e293b;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        [data-theme="dark"] body {
+            background-color: #0f172a;
+        }
+
+        [data-theme="dark"] .container {
+            background: #1e293b;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+        }
+
+        [data-theme="dark"] h1 {
+            color: #f8fafc;
+        }
+
+        [data-theme="dark"] p {
+            color: #94a3b8;
+        }
+    </style>
+  <script type="module" crossorigin src="./assets/index-BK2zVub1.js"></script>
+  <link rel="stylesheet" crossorigin href="./timeline.css">
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Lifecycle Timeline</h1>
+        <p>A beautiful, premium JS timeline component for visualizing product lifecycles, OSS support, and enterprise
+            support dates.</p>
+        <button id="update-btn" style="margin-top: 10px; padding: 8px 16px; border-radius: 8px; border: 1px solid #ccc; cursor: pointer; background: white;">Ajouter une version (Dynamic Update)</button>
+    </div>
+
+    <div class="container">
+        <div id="timeline-root"></div>
+    </div>
+
+</body>
+
+</html>
