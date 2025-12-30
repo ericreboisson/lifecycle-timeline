@@ -45,10 +45,15 @@ export default class Timeline {
     this.options = options;
     this.visibleCount = options.visibleCount || 3;
     this.showTable = options.showTable !== false;
+    this.showThemeToggle = options.showThemeToggle !== false;
     this.isExpanded = false;
     this.theme = 'light';
     this.filterText = '';
     this.activeHighlight = null;
+
+    // Apply root scoping class and initial theme
+    this.root.classList.add('lifecycle-timeline-root');
+    this.root.setAttribute('data-theme', this.theme);
 
     // Merge default translations with custom ones
     this.translations = { ...DEFAULT_TRANSLATIONS, ...(options.i18n || {}) };
@@ -88,7 +93,9 @@ export default class Timeline {
     this.root.setAttribute('aria-label', 'Product Lifecycle Timeline');
 
     this.renderToolbar();
-    this.renderThemeToggle();
+    if (this.showThemeToggle) {
+      this.renderThemeToggle();
+    }
 
     if (this.showTable) {
       this.tableContainer = this.el('div', 'timeline-table-container', this.root);
@@ -287,7 +294,7 @@ export default class Timeline {
    */
   setupTooltip() {
     if (this.tooltip) this.tooltip.remove();
-    this.tooltip = this.el('div', 'timeline-tooltip-overlay', document.body);
+    this.tooltip = this.el('div', 'timeline-tooltip-overlay', this.root);
     this.tooltip.style.display = 'none';
     this.tooltip.setAttribute('role', 'tooltip');
   }
@@ -308,14 +315,19 @@ export default class Timeline {
    * @param {MouseEvent} e - The mouse event.
    */
   updateTooltipPos(e) {
+    const rect = this.root.getBoundingClientRect();
     const padding = 12;
-    let x = e.pageX + padding;
-    let y = e.pageY + padding;
+
+    // Calculate position relative to this.root
+    let x = e.clientX - rect.left + padding;
+    let y = e.clientY - rect.top + padding;
 
     const tw = this.tooltip.offsetWidth;
     const th = this.tooltip.offsetHeight;
-    if (x + tw > window.innerWidth) x = e.pageX - tw - padding;
-    if (y + th > window.innerHeight) y = e.pageY - th - padding;
+
+    // Boundary checks relative to root width/height
+    if (x + tw > this.root.offsetWidth) x = e.clientX - rect.left - tw - padding;
+    if (y + th > this.root.offsetHeight) y = e.clientY - rect.top - th - padding;
 
     this.tooltip.style.left = `${x}px`;
     this.tooltip.style.top = `${y}px`;
@@ -391,7 +403,7 @@ export default class Timeline {
     btn.innerHTML = this.theme === 'dark' ? icons.sun : icons.moon;
     btn.onclick = () => {
       this.theme = this.theme === 'light' ? 'dark' : 'light';
-      document.documentElement.setAttribute('data-theme', this.theme);
+      this.root.setAttribute('data-theme', this.theme);
       btn.innerHTML = this.theme === 'dark' ? icons.sun : icons.moon;
       btn.setAttribute('aria-pressed', this.theme === 'dark');
     };

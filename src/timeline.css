@@ -1,5 +1,5 @@
 /* timeline.css */
-:root {
+.lifecycle-timeline-root {
     /* Light Theme (Default) */
     --bg-page: #f9fafb;
     --bg-card: #ffffff;
@@ -23,9 +23,20 @@
 
     --tooltip-bg: #ffffff;
     --tooltip-shadow: rgba(0, 0, 0, 0.1);
+
+    /* Ensure the root itself has the transition for smooth theme switching */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    background-color: var(--bg-card);
+    /* Component background */
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    padding: 24px;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
 }
 
-[data-theme="dark"] {
+.lifecycle-timeline-root[data-theme="dark"] {
     /* Dark Theme Overrides */
     --bg-page: #111827;
     /* Gray-900 */
@@ -42,7 +53,6 @@
     --line-color: #374151;
     --grid-line: #6b7280;
     /* Gray-500 */
-    /* Gray-600 */
 
     --tooltip-bg: #1f2937;
     --tooltip-shadow: rgba(0, 0, 0, 0.5);
@@ -50,29 +60,6 @@
     /* Slightly dim accents if needed or keep vibrant */
     --accent-oss: #78bd5d;
     --accent-ent: #e3c456;
-}
-
-body {
-    margin: 0;
-    padding: 0;
-    background-color: var(--bg-page);
-    font-family: var(--font-family);
-    color: var(--text-primary);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.page-container {
-    width: 100%;
-    max-width: 1200px;
-    padding: 2rem;
-    background: var(--bg-card);
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    transition: background-color 0.3s ease;
 }
 
 /* Timeline Component Styles */
@@ -570,8 +557,8 @@ body {
 /* Theme Toggle Button */
 .theme-toggle-btn {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: 24px;
+    right: 24px;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
