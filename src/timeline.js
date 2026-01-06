@@ -52,7 +52,7 @@ export default class Timeline {
     this.activeHighlight = null;
 
     // Apply root scoping class and initial theme
-    this.root.classList.add('lifecycle-timeline-root');
+    this.root.classList.add('lt-root');
     this.root.setAttribute('data-theme', this.theme);
 
     // Merge default translations with custom ones
@@ -98,20 +98,20 @@ export default class Timeline {
     }
 
     if (this.showTable) {
-      this.tableContainer = this.el('div', 'timeline-table-container', this.root);
+      this.tableContainer = this.el('div', 'lt-table-container', this.root);
     }
 
-    this.wrapper = this.el('div', 'timeline-wrapper', this.root);
+    this.wrapper = this.el('div', 'lt-wrapper', this.root);
     // Added ARIA grid for structured data
     this.wrapper.setAttribute('role', 'grid');
     this.wrapper.setAttribute('aria-readonly', 'true');
 
-    this.axis = this.el('div', 'timeline-axis', this.wrapper);
+    this.axis = this.el('div', 'lt-axis', this.wrapper);
     this.axis.setAttribute('role', 'row');
 
-    this.tracks = this.el('div', 'timeline-tracks', this.wrapper);
+    this.tracks = this.el('div', 'lt-tracks', this.wrapper);
 
-    this.legendContainer = this.el('div', 'timeline-legend-container', this.wrapper);
+    this.legendContainer = this.el('div', 'lt-legend-container', this.wrapper);
   }
 
   /**
@@ -174,7 +174,7 @@ export default class Timeline {
    * Renders the data table.
    */
   renderTable() {
-    const table = this.el('table', 'timeline-table', this.tableContainer);
+    const table = this.el('table', 'lt-table', this.tableContainer);
     table.setAttribute('aria-label', 'Project support');
 
     const thead = this.el('thead', '', table);
@@ -186,7 +186,7 @@ export default class Timeline {
     this.tableBody = this.el('tbody', '', table);
     this.tableRows = this.data.map(item => this.createTableRow(item));
 
-    this.tableToggleContainer = this.el('div', 'timeline-table-toggle', this.tableContainer);
+    this.tableToggleContainer = this.el('div', 'lt-table-toggle', this.tableContainer);
     this.updateTableVisibility();
   }
 
@@ -201,28 +201,28 @@ export default class Timeline {
     const now = Date.now(), s = new Date(item.ossStart).getTime(), e = new Date(item.ossEnd).getTime();
     const ent = item.enterpriseEnd ? new Date(item.enterpriseEnd).getTime() : e;
 
-    const statusClass = now >= s && now <= e ? 'status-oss' : (now > e && now <= ent ? 'status-ent' : (now > ent ? 'status-expired' : ''));
+    const statusClass = now >= s && now <= e ? 'lt-status-oss' : (now > e && now <= ent ? 'lt-status-ent' : (now > ent ? 'lt-status-expired' : ''));
 
     const branchCell = this.el('td', '', row);
-    let badgeContent = `<span class="table-badge ${statusClass}">${item.versionOriginal || item.version}</span>`;
+    let badgeContent = `<span class="lt-table-badge ${statusClass}">${item.versionOriginal || item.version}</span>`;
 
     if (item.releaseNotesUrl) {
-      branchCell.innerHTML = `<a href="${item.releaseNotesUrl}" target="_blank" class="table-version-link">${badgeContent}</a>`;
+      branchCell.innerHTML = `<a href="${item.releaseNotesUrl}" target="_blank" class="lt-table-version-link">${badgeContent}</a>`;
     } else {
       branchCell.innerHTML = badgeContent;
     }
 
     const initialCell = this.el('td', '', row);
     initialCell.textContent = item.ossStart;
-    if (now > s) initialCell.className = 'past-date';
+    if (now > s) initialCell.className = 'lt-past-date';
 
     const ossCell = this.el('td', '', row);
     ossCell.textContent = item.ossEnd;
-    if (now > e) ossCell.className = 'past-date';
+    if (now > e) ossCell.className = 'lt-past-date';
 
     const entCell = this.el('td', '', row);
     entCell.textContent = item.enterpriseEnd || item.ossEnd;
-    if (now > ent) entCell.className = 'past-date';
+    if (now > ent) entCell.className = 'lt-past-date';
 
     return { el: row, version: item.version.toLowerCase(), versionOriginal: item.versionOriginal || item.version };
   }
@@ -235,22 +235,22 @@ export default class Timeline {
 
     // Update highlights in table badges
     this.tableRows.forEach(r => {
-      const badge = r.el.querySelector('.table-badge');
+      const badge = r.el.querySelector('.lt-table-badge');
       badge.innerHTML = this.highlight(r.versionOriginal || r.version);
-      r.el.classList.remove('row-visible');
-      r.el.classList.add('row-hidden');
+      r.el.classList.remove('lt-row-visible');
+      r.el.classList.add('lt-row-hidden');
     });
 
     const hasMore = this.filterText === '' && filtered.length > this.visibleCount;
     const toShow = (hasMore && !this.isExpanded) ? filtered.slice(0, this.visibleCount) : filtered;
     toShow.forEach(r => {
-      r.el.classList.remove('row-hidden');
-      r.el.classList.add('row-visible');
+      r.el.classList.remove('lt-row-hidden');
+      r.el.classList.add('lt-row-visible');
     });
 
     this.tableToggleContainer.innerHTML = '';
     if (hasMore) {
-      const btn = this.el('button', 'timeline-toggle-btn table-toggle', this.tableToggleContainer);
+      const btn = this.el('button', 'lt-toggle-btn lt-table-toggle', this.tableToggleContainer);
       const icon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="${this.isExpanded ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}"></polyline></svg>`;
       btn.innerHTML = this.isExpanded ? `${this.t('less')} ${icon}` : `${this.t('more', { n: filtered.length - this.visibleCount })} ${icon}`;
       btn.onclick = () => { this.isExpanded = !this.isExpanded; this.updateVisibility(); };
@@ -270,13 +270,13 @@ export default class Timeline {
     if (this.showTable) this.renderTable();
     this.renderAxis();
 
-    this.grid = this.el('div', 'grid-lines-container', this.tracks);
-    this.indicators = this.el('div', 'indicators-container', this.tracks);
+    this.grid = this.el('div', 'lt-grid-lines-container', this.tracks);
+    this.indicators = this.el('div', 'lt-indicators-container', this.tracks);
     this.renderGrid();
     this.renderCurrentDateLine();
 
     this.rows = this.data.map((item, index) => this.createRow(item, index));
-    this.toggleContainer = this.el('div', 'timeline-more-toggle', this.tracks, {
+    this.toggleContainer = this.el('div', 'lt-more-toggle', this.tracks, {
       paddingTop: '10px',
       display: 'flex',
       justifyContent: 'center',
@@ -294,7 +294,7 @@ export default class Timeline {
    */
   setupTooltip() {
     if (this.tooltip) this.tooltip.remove();
-    this.tooltip = this.el('div', 'timeline-tooltip-overlay', this.root);
+    this.tooltip = this.el('div', 'lt-tooltip', this.root);
     this.tooltip.style.display = 'none';
     this.tooltip.setAttribute('role', 'tooltip');
   }
@@ -349,7 +349,7 @@ export default class Timeline {
     if (!this.filterText) return text;
     try {
       const regex = new RegExp(`(${this.filterText})`, 'gi');
-      return text.replace(regex, '<mark class="highlight-match">$1</mark>');
+      return text.replace(regex, '<mark class="lt-highlight-match">$1</mark>');
     } catch (e) {
       return text;
     }
@@ -375,11 +375,11 @@ export default class Timeline {
    * Renders the toolbar with the filter input.
    */
   renderToolbar() {
-    const bar = this.el('div', 'timeline-toolbar', this.root);
-    const container = this.el('div', 'timeline-filter-container', bar);
+    const bar = this.el('div', 'lt-toolbar', this.root);
+    const container = this.el('div', 'lt-filter-container', bar);
     container.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
 
-    const input = this.el('input', 'timeline-filter-input', container);
+    const input = this.el('input', 'lt-filter-input', container);
     input.placeholder = this.t('filter');
     input.value = this.filterText;
     input.setAttribute('aria-label', this.t('filter'));
@@ -393,7 +393,7 @@ export default class Timeline {
    * Renders the theme toggle button.
    */
   renderThemeToggle() {
-    const btn = this.el('button', 'theme-toggle-btn', this.root);
+    const btn = this.el('button', 'lt-theme-toggle-btn', this.root);
     btn.title = this.t('dark');
     btn.setAttribute('aria-label', this.t('dark'));
     const icons = {
@@ -414,17 +414,17 @@ export default class Timeline {
    */
   renderLegend() {
     this.legendContainer.innerHTML = '';
-    const container = this.el('div', 'release-legend', this.legendContainer);
+    const container = this.el('div', 'lt-legend', this.legendContainer);
     container.setAttribute('role', 'complementary');
     container.setAttribute('aria-label', 'Support Legend');
 
     ['oss', 'ent', 'eol'].forEach(type => {
-      const item = this.el('div', `legend-block ${type === 'ent' ? 'commercial' : type}`, container);
-      item.classList.add('legend-item-reactive');
-      if (this.activeHighlight === type) item.classList.add('active-highlight');
+      const item = this.el('div', `lt-legend-block ${type === 'ent' ? 'commercial' : type}`, container);
+      item.classList.add('lt-legend-item-reactive');
+      if (this.activeHighlight === type) item.classList.add('lt-active-highlight');
 
       item.innerHTML = `
-        <div class="legend-icon" aria-hidden="true"></div>
+        <div class="lt-legend-icon" aria-hidden="true"></div>
         <div><h3>${this.t(type)}</h3><p>${this.t(type + 'Desc')}</p></div>
       `;
 
@@ -440,10 +440,10 @@ export default class Timeline {
     this.activeHighlight = this.activeHighlight === type ? null : type;
 
     // Reset classes on the root element
-    this.root.classList.remove('highlight-oss', 'highlight-ent', 'highlight-eol');
+    this.root.classList.remove('lt-highlight-oss', 'lt-highlight-ent', 'lt-highlight-eol');
 
     if (this.activeHighlight) {
-      this.root.classList.add(`highlight-${this.activeHighlight}`);
+      this.root.classList.add(`lt-highlight-${this.activeHighlight}`);
     }
 
     this.renderLegend();
@@ -457,7 +457,7 @@ export default class Timeline {
     spacer.setAttribute('role', 'presentation');
 
     for (let y = this.minYear; y <= this.maxYear; y++) {
-      const year = this.el('div', 'timeline-year', this.axis);
+      const year = this.el('div', 'lt-year', this.axis);
       year.textContent = y;
       year.setAttribute('role', 'columnheader');
     }
@@ -470,7 +470,7 @@ export default class Timeline {
     const start = new Date(this.minYear, 0, 1).getTime();
     const dur = new Date(this.maxYear, 11, 31).getTime() - start;
     for (let y = this.minYear; y <= this.maxYear; y++) {
-      const line = this.el('div', 'year-grid-line', this.grid);
+      const line = this.el('div', 'lt-year-grid-line', this.grid);
       line.style.left = `${((new Date(y, 0, 1).getTime() - start) / dur) * 100}%`;
       line.setAttribute('role', 'presentation');
     }
@@ -482,22 +482,22 @@ export default class Timeline {
    * @returns {Object} Metadata about the created row.
    */
   createRow(item, index) {
-    const row = this.el('div', 'timeline-row row-entrance', this.tracks);
+    const row = this.el('div', 'lt-row row-entrance', this.tracks);
     row.setAttribute('role', 'row');
     // Staggered animation delay
     row.style.transitionDelay = `${index * 0.05}s`;
 
-    const label = this.el('div', 'version-label', row);
+    const label = this.el('div', 'lt-version-label', row);
     label.setAttribute('role', 'rowheader');
 
     // Status Logic
     const now = Date.now(), s = new Date(item.ossStart).getTime(), e = new Date(item.ossEnd).getTime();
     const ent = item.enterpriseEnd ? new Date(item.enterpriseEnd).getTime() : e;
-    const statusClass = now >= s && now <= e ? 'status-oss' : (now > e && now <= ent ? 'status-ent' : (now > ent ? 'status-expired' : ''));
+    const statusClass = now >= s && now <= e ? 'lt-status-oss' : (now > e && now <= ent ? 'lt-status-ent' : (now > ent ? 'lt-status-expired' : ''));
     if (statusClass) label.classList.add(statusClass);
 
     if (item.releaseNotesUrl) {
-      const a = this.el('a', 'version-link', label);
+      const a = this.el('a', 'lt-version-link', label);
       a.href = item.releaseNotesUrl; a.target = '_blank';
       a.innerHTML = this.highlight(item.version);
       a.title = this.t('notes', { v: item.version });
@@ -506,11 +506,11 @@ export default class Timeline {
       label.innerHTML = this.highlight(item.version);
     }
 
-    const track = this.el('div', 'track-container', row);
+    const track = this.el('div', 'lt-track-container', row);
     track.setAttribute('role', 'gridcell');
 
-    track.appendChild(this.createBar(item, item.ossStart, item.enterpriseEnd || item.ossEnd, 'bar-ent', this.t('ent')));
-    track.appendChild(this.createBar(item, item.ossStart, item.ossEnd, 'bar-oss', this.t('oss')));
+    track.appendChild(this.createBar(item, item.ossStart, item.enterpriseEnd || item.ossEnd, 'lt-bar-ent', this.t('ent')));
+    track.appendChild(this.createBar(item, item.ossStart, item.ossEnd, 'lt-bar-oss', this.t('oss')));
 
     return { el: row, version: item.version.toLowerCase(), versionOriginal: item.version };
   }
@@ -529,9 +529,9 @@ export default class Timeline {
     const timelineStart = new Date(this.minYear, 0, 1).getTime();
     const timelineDur = new Date(this.maxYear, 11, 31).getTime() - timelineStart;
 
-    const bar = this.el('div', `bar-segment ${className}`);
+    const bar = this.el('div', `lt-bar-segment ${className}`);
     // Add specific type for highlighting
-    const type = className === 'bar-oss' ? 'segment-oss' : 'segment-ent';
+    const type = className === 'lt-bar-oss' ? 'lt-segment-oss' : 'lt-segment-ent';
     bar.classList.add(type);
     bar.style.left = `${((s - timelineStart) / timelineDur) * 100}%`;
     bar.style.width = `${((e - s) / timelineDur) * 100}%`;
@@ -540,9 +540,9 @@ export default class Timeline {
     bar.tabIndex = 0; // Make focusable
 
     const tooltipContent = `
-      <div class="tooltip-header">${label} - ${item.version}</div>
-      <div class="tooltip-date"><strong>Du:</strong> ${startStr}</div>
-      <div class="tooltip-date"><strong>Au:</strong> ${endStr}</div>
+      <div class="lt-tooltip-header">${label} - ${item.version}</div>
+      <div class="lt-tooltip-date"><strong>Du:</strong> ${startStr}</div>
+      <div class="lt-tooltip-date"><strong>Au:</strong> ${endStr}</div>
     `;
 
     bar.onmouseenter = (ev) => this.showTooltip(ev, tooltipContent);
@@ -567,29 +567,29 @@ export default class Timeline {
 
     // Update highlights in labels while filtering
     this.rows.forEach(r => {
-      const label = r.el.querySelector('.version-label');
-      const link = label.querySelector('.version-link');
+      const label = r.el.querySelector('.lt-version-label');
+      const link = label.querySelector('.lt-version-link');
       if (link) {
         link.innerHTML = this.highlight(r.versionOriginal || r.version);
       } else {
         label.innerHTML = this.highlight(r.versionOriginal || r.version);
       }
-      r.el.classList.remove('row-visible');
-      r.el.classList.add('row-hidden');
+      r.el.classList.remove('lt-row-visible');
+      r.el.classList.add('lt-row-hidden');
     });
 
     const hasMore = this.filterText === '' && filtered.length > this.visibleCount;
     const toShow = (hasMore && !this.isExpanded) ? filtered.slice(0, this.visibleCount) : filtered;
     toShow.forEach(r => {
-      r.el.classList.remove('row-hidden');
-      r.el.classList.add('row-visible');
+      r.el.classList.remove('lt-row-hidden');
+      r.el.classList.add('lt-row-visible');
     });
 
     if (this.showTable) this.updateTableVisibility();
 
     this.toggleContainer.innerHTML = '';
     if (hasMore) {
-      const btn = this.el('button', 'timeline-toggle-btn', this.toggleContainer);
+      const btn = this.el('button', 'lt-toggle-btn', this.toggleContainer);
       const icon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="${this.isExpanded ? '18 15 12 9 6 15' : '6 9 12 15 18 9'}"></polyline></svg>`;
       btn.innerHTML = this.isExpanded ? `${this.t('less')} ${icon}` : `${this.t('more', { n: filtered.length - this.visibleCount })} ${icon}`;
       btn.setAttribute('aria-expanded', this.isExpanded);
@@ -611,12 +611,12 @@ export default class Timeline {
     if (offset < 0 || offset > dur) return;
 
     const currentStr = new Date().toISOString().split('T')[0];
-    const line = this.el('div', 'current-date-indicator', this.indicators);
+    const line = this.el('div', 'lt-current-date-indicator', this.indicators);
     line.style.left = `${(offset / dur) * 100}%`;
     line.setAttribute('role', 'separator');
     line.setAttribute('aria-label', this.t('today', { date: currentStr }));
 
-    const badge = this.el('div', 'current-date-badge', line);
+    const badge = this.el('div', 'lt-current-date-badge', line);
     badge.textContent = currentStr;
     badge.setAttribute('aria-hidden', 'true');
   }

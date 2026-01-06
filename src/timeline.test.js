@@ -66,7 +66,7 @@ describe('Timeline Component', () => {
         timeline.filterText = '2.1';
         timeline.updateVisibility();
 
-        const visibleRows = timeline.rows.filter(r => r.el.classList.contains('row-visible'));
+        const visibleRows = timeline.rows.filter(r => r.el.classList.contains('lt-row-visible'));
         expect(visibleRows.length).toBe(1);
         expect(visibleRows[0].versionOriginal).toBe('2.1.0');
     });

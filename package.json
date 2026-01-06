@@ -1,6 +1,6 @@
 {
   "name": "lifecycle-timeline",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "A beautiful, premium JS timeline component for visualizing product lifecycles, OSS support, and enterprise support dates.",
   "type": "module",
   "main": "./dist/timeline.umd.cjs",
