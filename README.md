@@ -78,6 +78,9 @@ new Timeline('timeline-root', data, { visibleCount: 3 });
 | `locale` | `string` | `auto` | UI language (`'en'`, `'fr'`). |
 | `i18n` | `object` | `{}` | Custom translations or new languages. |
 | `showTable` | `boolean` | `true` | Shows/hides the summary data table. |
+| `showLegend` | `boolean` | `true` | Shows/hides the legend below the timeline. |
+| `filterVersions` | `boolean` | `true` | Shows/hides the version filter input. |
+| `splitSupport` | `boolean` | `false` | If `true`, Ent. starts after OSS end. If `false`, overlaps. |
 
 ### 🌐 Internationalization (i18n)
 

@@ -46,6 +46,9 @@ export default class Timeline {
     this.visibleCount = options.visibleCount || 3;
     this.showTable = options.showTable !== false;
     this.showThemeToggle = options.showThemeToggle !== false;
+    this.showLegend = options.showLegend !== false;
+    this.filterVersions = options.filterVersions !== false;
+    this.splitSupport = options.splitSupport === true;
     this.isExpanded = false;
     this.theme = 'light';
     this.filterText = '';
@@ -53,6 +56,8 @@ export default class Timeline {
 
     // Apply root scoping class and initial theme
     this.root.classList.add('lt-root');
+    this.root.classList.toggle('lt-mode-split', this.splitSupport);
+    this.root.classList.toggle('lt-mode-overlay', !this.splitSupport);
     this.root.setAttribute('data-theme', this.theme);
 
     // Merge default translations with custom ones
@@ -111,7 +116,9 @@ export default class Timeline {
 
     this.tracks = this.el('div', 'lt-tracks', this.wrapper);
 
-    this.legendContainer = this.el('div', 'lt-legend-container', this.wrapper);
+    if (this.showLegend) {
+      this.legendContainer = this.el('div', 'lt-legend-container', this.wrapper);
+    }
   }
 
   /**
@@ -265,7 +272,7 @@ export default class Timeline {
     if (this.showTable) this.tableContainer.innerHTML = '';
     this.axis.innerHTML = '';
     this.tracks.innerHTML = '';
-    this.legendContainer.innerHTML = '';
+    if (this.showLegend) this.legendContainer.innerHTML = '';
 
     if (this.showTable) this.renderTable();
     this.renderAxis();
@@ -285,7 +292,7 @@ export default class Timeline {
     });
 
     this.updateVisibility();
-    this.renderLegend();
+    if (this.showLegend) this.renderLegend();
     this.setupTooltip();
   }
 
@@ -376,17 +383,20 @@ export default class Timeline {
    */
   renderToolbar() {
     const bar = this.el('div', 'lt-toolbar', this.root);
-    const container = this.el('div', 'lt-filter-container', bar);
-    container.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
 
-    const input = this.el('input', 'lt-filter-input', container);
-    input.placeholder = this.t('filter');
-    input.value = this.filterText;
-    input.setAttribute('aria-label', this.t('filter'));
-    input.oninput = (e) => {
-      this.filterText = e.target.value.toLowerCase().trim();
-      this.updateVisibility();
-    };
+    if (this.filterVersions) {
+      const container = this.el('div', 'lt-filter-container', bar);
+      container.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
+
+      const input = this.el('input', 'lt-filter-input', container);
+      input.placeholder = this.t('filter');
+      input.value = this.filterText;
+      input.setAttribute('aria-label', this.t('filter'));
+      input.oninput = (e) => {
+        this.filterText = e.target.value.toLowerCase().trim();
+        this.updateVisibility();
+      };
+    }
   }
 
   /**
@@ -509,7 +519,17 @@ export default class Timeline {
     const track = this.el('div', 'lt-track-container', row);
     track.setAttribute('role', 'gridcell');
 
-    track.appendChild(this.createBar(item, item.ossStart, item.enterpriseEnd || item.ossEnd, 'lt-bar-ent', this.t('ent')));
+    const entStart = this.splitSupport ? item.ossEnd : item.ossStart;
+
+    // EOL Segment (Red)
+    const endSupport = item.enterpriseEnd || item.ossEnd;
+    const eolEnd = new Date(this.maxYear, 11, 31).toISOString().split('T')[0]; // Extends to end of timeline
+
+    // Only show EOL if the version is actually expired relative to today OR if we want to show the future EOL block
+    // Actually typically EOL is just the period after endSupport.
+
+    track.appendChild(this.createBar(item, endSupport, eolEnd, 'lt-bar-eol', this.t('eol')));
+    track.appendChild(this.createBar(item, entStart, item.enterpriseEnd || item.ossEnd, 'lt-bar-ent', this.t('ent')));
     track.appendChild(this.createBar(item, item.ossStart, item.ossEnd, 'lt-bar-oss', this.t('oss')));
 
     return { el: row, version: item.version.toLowerCase(), versionOriginal: item.version };
@@ -531,7 +551,7 @@ export default class Timeline {
 
     const bar = this.el('div', `lt-bar-segment ${className}`);
     // Add specific type for highlighting
-    const type = className === 'lt-bar-oss' ? 'lt-segment-oss' : 'lt-segment-ent';
+    const type = className === 'lt-bar-oss' ? 'lt-segment-oss' : (className === 'lt-bar-ent' ? 'lt-segment-ent' : 'lt-segment-eol');
     bar.classList.add(type);
     bar.style.left = `${((s - timelineStart) / timelineDur) * 100}%`;
     bar.style.width = `${((e - s) / timelineDur) * 100}%`;

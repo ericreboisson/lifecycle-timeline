@@ -29,6 +29,24 @@ export interface TimelineOptions {
      * @default true
      */
     showTable?: boolean;
+
+    /**
+     * Whether to show the legend below the timeline.
+     * @default true
+     */
+    showLegend?: boolean;
+
+    /**
+     * Whether to show the version filter input.
+     * @default true
+     */
+    filterVersions?: boolean;
+
+    /**
+     * Whether to show the enterprise bar normally (false) or split after OSS (true).
+     * @default false
+     */
+    splitSupport?: boolean;
 }
 
 export default class Timeline {

@@ -103,7 +103,7 @@
             }
         ];
 
-        const timeline = new Timeline('timeline-root', data, { visibleCount: 3, locale: "fr" });
+        const timeline = new Timeline('timeline-root', data, { splitSupport: true, visibleCount: 3, locale: "fr", showTable: false, showLegend: false, filterVersions: false });
 
         document.getElementById('update-btn').onclick = () => {
             const newData = [
