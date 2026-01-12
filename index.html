@@ -81,7 +81,8 @@
                 ossStart: "2024-06-10",
                 ossEnd: "2025-11-30",
                 enterpriseEnd: "2027-12-01",
-                releaseNotesUrl: "https://example.com/notes"
+                releaseNotesUrl: "https://example.com/notes",
+                isMajor: true
             },
             {
                 version: "4.4.x",
@@ -103,7 +104,40 @@
             }
         ];
 
-        const timeline = new Timeline('timeline-root', data, { splitSupport: true, visibleCount: 3, locale: "fr", showTable: false, showLegend: false, filterVersions: false });
+        const timeline = new Timeline('timeline-root', data, {
+            compactMode: true,
+            splitSupport: false,
+            visibleCount: 3,
+            locale: "fr",
+            showTable: false,
+            showLegend: true,
+            filterVersions: false,
+            showMajorFilter: true,
+            i18n: {
+                fr: {
+                    // Custom overrides matching user request
+                    oss: "Version active",
+                    ent: "Version dépréciée",
+                    eol: "Fin de vie",
+
+                    // Preserved defaults for the rest
+                    filter: "Filtrer les versions...",
+                    less: "Voir moins",
+                    more: "Voir {n} versions supplémentaires",
+                    notes: "Voir les notes de version pour {v}",
+                    dark: "Changer le mode sombre",
+                    ossDesc: "Mises à jour de sécurité et corrections de bugs gratuites.",
+                    entDesc: "Support pendant la période OSS plus support étendu après.",
+                    eolDesc: "Version en fin de vie. Plus de mises à jour.",
+                    today: "Date du jour : {date}",
+                    branch: "Version",
+                    initial: "Sortie initiale",
+                    ossEnd: "Fin OSS",
+                    entEnd: "Fin Entreprise *",
+                    majorOnly: "Versions majeures uniquement"
+                }
+            }
+        });
 
         document.getElementById('update-btn').onclick = () => {
             const newData = [

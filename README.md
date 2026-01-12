@@ -81,6 +81,8 @@ new Timeline('timeline-root', data, { visibleCount: 3 });
 | `showLegend` | `boolean` | `true` | Shows/hides the legend below the timeline. |
 | `filterVersions` | `boolean` | `true` | Shows/hides the version filter input. |
 | `splitSupport` | `boolean` | `false` | If `true`, Ent. starts after OSS end. If `false`, overlaps. |
+| `compactMode` | `boolean` | `false` | Reduces vertical spacing for a denser view. |
+| `showMajorFilter` | `boolean` | `false` | Adds a checkbox to filter for major versions only. |
 
 ### 🌐 Internationalization (i18n)
 
@@ -108,6 +110,7 @@ The component uses CSS variables for easy customization:
   --accent-oss: #99e67d;     /* Community support color */
   --accent-ent: #ffe88e;     /* Enterprise support color */
   --current-date: #086dc3;   /* Today's indicator color */
+  --accent-eol: #ef4444;     /* End of life color */
 }
 ```
 

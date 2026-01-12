@@ -4,6 +4,7 @@ export interface TimelineVersion {
     ossEnd: string;
     enterpriseEnd: string;
     releaseNotesUrl?: string;
+    isMajor?: boolean;
 }
 
 export interface TimelineOptions {
@@ -47,6 +48,18 @@ export interface TimelineOptions {
      * @default false
      */
     splitSupport?: boolean;
+
+    /**
+     * Whether to use compact mode (reduced height).
+     * @default false
+     */
+    compactMode?: boolean;
+
+    /**
+     * Whether to show the major version filter checkbox.
+     * @default false
+     */
+    showMajorFilter?: boolean;
 }
 
 export default class Timeline {

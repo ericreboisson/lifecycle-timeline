@@ -148,6 +148,11 @@
     z-index: 10;
 }
 
+.lt-version-label.lt-version-major {
+    font-weight: 800;
+    border: 2px solid var(--border-color);
+}
+
 .lt-version-label:hover {
     background-color: var(--bg-track);
     transform: scale(1.05);
@@ -433,7 +438,7 @@
 }
 
 .lt-legend-block.eol .lt-legend-icon {
-    background-color: var(--bg-track);
+    background-color: var(--accent-eol);
 }
 
 /* Toolbar & Filters */
@@ -471,6 +476,22 @@
     color: var(--text-primary);
     background: transparent;
     width: 100%;
+}
+
+.lt-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    user-select: none;
+}
+
+.lt-checkbox-label input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
 }
 
 .lt-highlight-match {
@@ -516,6 +537,21 @@
 .lt-bar-segment,
 .lt-version-label {
     transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+/* Compact Mode Overrides */
+.lt-mode-compact .lt-row {
+    margin-bottom: 0.85rem;
+    height: 24px;
+}
+
+.lt-mode-compact .lt-version-label {
+    font-size: 0.75rem;
+    padding: 2px 4px;
+}
+
+.lt-mode-compact .lt-bar-segment {
+    font-size: 0.7rem;
 }
 
 /* Highlight OSS */

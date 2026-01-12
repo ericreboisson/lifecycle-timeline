@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legend Verification</title>
+    <link rel="stylesheet" href="./src/timeline.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="timeline-legend"></div>
+    <script type="module">
+        import Timeline from './src/timeline.js';
+        const data = [{ version: "1.0", ossStart: "2024-01-01", ossEnd: "2025-01-01" }];
+        new Timeline('timeline-legend', data, { showLegend: true });
+    </script>
+</body>
+
+</html>

@@ -11,7 +11,8 @@ const DEFAULT_TRANSLATIONS = {
     entDesc: "Expert support during OSS plus extended support after EOL.",
     eolDesc: "End of life. No further updates are provided.",
     today: "Today's date: {date}",
-    branch: "Branch", initial: "Initial Release", ossEnd: "End OSS", entEnd: "End Enterprise *"
+    branch: "Branch", initial: "Initial Release", ossEnd: "End OSS", entEnd: "End Enterprise *",
+    majorOnly: "Major versions only"
   },
   fr: {
     filter: "Filtrer les versions...", oss: "Support OSS", ent: "Support Entreprise",
@@ -21,7 +22,8 @@ const DEFAULT_TRANSLATIONS = {
     entDesc: "Support pendant la période OSS plus support étendu après.",
     eolDesc: "Version en fin de vie. Plus de mises à jour.",
     today: "Date du jour : {date}",
-    branch: "Version", initial: "Sortie initiale", ossEnd: "Fin OSS", entEnd: "Fin Entreprise *"
+    branch: "Version", initial: "Sortie initiale", ossEnd: "Fin OSS", entEnd: "Fin Entreprise *",
+    majorOnly: "Versions majeures uniquement"
   }
 };
 
@@ -49,15 +51,19 @@ export default class Timeline {
     this.showLegend = options.showLegend !== false;
     this.filterVersions = options.filterVersions !== false;
     this.splitSupport = options.splitSupport === true;
+    this.compactMode = options.compactMode === true;
+    this.showMajorFilter = options.showMajorFilter === true;
     this.isExpanded = false;
     this.theme = 'light';
     this.filterText = '';
+    this.majorFilterEnabled = false;
     this.activeHighlight = null;
 
     // Apply root scoping class and initial theme
     this.root.classList.add('lt-root');
     this.root.classList.toggle('lt-mode-split', this.splitSupport);
     this.root.classList.toggle('lt-mode-overlay', !this.splitSupport);
+    this.root.classList.toggle('lt-mode-compact', this.compactMode);
     this.root.setAttribute('data-theme', this.theme);
 
     // Merge default translations with custom ones
@@ -397,6 +403,19 @@ export default class Timeline {
         this.updateVisibility();
       };
     }
+
+    if (this.showMajorFilter) {
+      const label = this.el('label', 'lt-checkbox-label', bar);
+      const checkbox = this.el('input', '', label);
+      checkbox.type = 'checkbox';
+      checkbox.checked = this.majorFilterEnabled;
+      checkbox.onchange = (e) => {
+        this.majorFilterEnabled = e.target.checked;
+        this.updateVisibility();
+      };
+      const span = this.el('span', '', label);
+      span.textContent = this.t('majorOnly');
+    }
   }
 
   /**
@@ -506,6 +525,10 @@ export default class Timeline {
     const statusClass = now >= s && now <= e ? 'lt-status-oss' : (now > e && now <= ent ? 'lt-status-ent' : (now > ent ? 'lt-status-expired' : ''));
     if (statusClass) label.classList.add(statusClass);
 
+    if (item.isMajor) {
+      label.classList.add('lt-version-major');
+    }
+
     if (item.releaseNotesUrl) {
       const a = this.el('a', 'lt-version-link', label);
       a.href = item.releaseNotesUrl; a.target = '_blank';
@@ -532,7 +555,7 @@ export default class Timeline {
     track.appendChild(this.createBar(item, entStart, item.enterpriseEnd || item.ossEnd, 'lt-bar-ent', this.t('ent')));
     track.appendChild(this.createBar(item, item.ossStart, item.ossEnd, 'lt-bar-oss', this.t('oss')));
 
-    return { el: row, version: item.version.toLowerCase(), versionOriginal: item.version };
+    return { el: row, version: item.version.toLowerCase(), versionOriginal: item.version, isMajor: item.isMajor };
   }
 
   /**
@@ -583,7 +606,11 @@ export default class Timeline {
    * Updates visibility of rows based on filtering and expansion state.
    */
   updateVisibility() {
-    const filtered = this.rows.filter(r => r.version.includes(this.filterText));
+    const filtered = this.rows.filter(r => {
+      const matchesText = r.version.includes(this.filterText);
+      const matchesMajor = this.majorFilterEnabled ? r.isMajor : true;
+      return matchesText && matchesMajor;
+    });
 
     // Update highlights in labels while filtering
     this.rows.forEach(r => {
