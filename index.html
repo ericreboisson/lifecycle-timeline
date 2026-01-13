@@ -105,7 +105,7 @@
         ];
 
         const timeline = new Timeline('timeline-root', data, {
-            compactMode: true,
+            compactMode: false,
             splitSupport: false,
             visibleCount: 3,
             locale: "fr",
@@ -113,6 +113,7 @@
             showLegend: true,
             filterVersions: false,
             showMajorFilter: true,
+            majorFilterDefault: true,
             i18n: {
                 fr: {
                     // Custom overrides matching user request

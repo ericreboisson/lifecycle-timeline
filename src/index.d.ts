@@ -60,6 +60,12 @@ export interface TimelineOptions {
      * @default false
      */
     showMajorFilter?: boolean;
+
+    /**
+     * Whether the major version filter runs by default.
+     * @default false
+     */
+    majorFilterDefault?: boolean;
 }
 
 export default class Timeline {

@@ -56,7 +56,7 @@ export default class Timeline {
     this.isExpanded = false;
     this.theme = 'light';
     this.filterText = '';
-    this.majorFilterEnabled = false;
+    this.majorFilterEnabled = options.majorFilterDefault === true;
     this.activeHighlight = null;
 
     // Apply root scoping class and initial theme
