@@ -1,7 +1,15 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import dts from 'vite-plugin-dts';
 
 export default defineConfig({
+  plugins: [
+    dts({
+      insertTypesEntry: true,
+      rollupTypes: true,
+      include: ['src/index.ts', 'src/timeline.ts', 'src/types.ts'],
+    }),
+  ],
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
