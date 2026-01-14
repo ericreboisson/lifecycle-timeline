@@ -522,7 +522,7 @@ export default class Timeline {
     // Status Logic
     const now = Date.now(), s = new Date(item.ossStart).getTime(), e = new Date(item.ossEnd).getTime();
     const ent = item.enterpriseEnd ? new Date(item.enterpriseEnd).getTime() : e;
-    const statusClass = now >= s && now <= e ? 'lt-status-oss' : (now > e && now <= ent ? 'lt-status-ent' : (now > ent ? 'lt-status-expired' : ''));
+    const statusClass = now < s ? 'lt-status-future' : (now >= s && now <= e ? 'lt-status-oss' : (now > e && now <= ent ? 'lt-status-ent' : (now > ent ? 'lt-status-expired' : '')));
     if (statusClass) label.classList.add(statusClass);
 
     if (item.isMajor) {
@@ -537,6 +537,7 @@ export default class Timeline {
       a.setAttribute('aria-label', this.t('notes', { v: item.version }));
     } else {
       label.innerHTML = this.highlight(item.version);
+      label.title = item.version;
     }
 
     const track = this.el('div', 'lt-track-container', row);

@@ -116,7 +116,8 @@
     align-items: center;
     margin-bottom: 1.5rem;
     position: relative;
-    height: 36px;
+    min-height: 36px;
+    height: auto;
     z-index: 1;
     opacity: 0;
     transform: translateY(10px);
@@ -129,8 +130,8 @@
 }
 
 .lt-version-label {
-    width: 80px;
-    min-width: 80px;
+    width: 90px;
+    min-width: 90px;
     box-sizing: border-box;
     padding: 4px 4px;
     border-radius: 12px;
@@ -146,6 +147,14 @@
     position: sticky;
     left: 0;
     z-index: 10;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow: visible;
+    /* text-overflow: ellipsis; Removed for dynamic sizing */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
 }
 
 .lt-version-label.lt-version-major {
@@ -188,10 +197,16 @@
     color: #ffffff;
 }
 
+.lt-status-future {
+    background-color: var(--bg-track);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
 .lt-track-container {
     flex-grow: 1;
     position: relative;
-    height: 100%;
+    height: 36px;
     background: var(--bg-track);
     border-radius: 0;
     overflow: hidden;
