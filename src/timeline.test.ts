@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import Timeline from './timeline.js';
+import Timeline from './timeline';
 
 describe('Timeline Component', () => {
-    let element;
+    let element: HTMLElement | null;
 
     const mockData = [
         {
@@ -28,8 +28,8 @@ describe('Timeline Component', () => {
     it('should validate and filter out invalid data', () => {
         const invalidData = [
             ...mockData,
-            { version: '2.0.0' }, // Missing dates
-            { version: '3.0.0', ossStart: 'invalid', ossEnd: '2024-01-01' } // Invalid date
+            { version: '2.0.0' } as any, // Missing dates
+            { version: '3.0.0', ossStart: 'invalid', ossEnd: '2024-01-01' } as any // Invalid date
         ];
 
         // Mock console.warn to avoid cluttering output

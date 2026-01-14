@@ -5,10 +5,10 @@
   "type": "module",
   "main": "./dist/timeline.umd.cjs",
   "module": "./dist/timeline.js",
-  "types": "./src/index.d.ts",
+  "types": "./dist/timeline.d.ts",
   "exports": {
     ".": {
-      "types": "./src/index.d.ts",
+      "types": "./dist/timeline.d.ts",
       "import": "./dist/timeline.js",
       "require": "./dist/timeline.umd.cjs"
     },
@@ -16,8 +16,7 @@
     "./dist/timeline.css": "./dist/timeline.css"
   },
   "files": [
-    "dist",
-    "src/index.d.ts"
+    "dist"
   ],
   "scripts": {
     "dev": "vite",
@@ -25,7 +24,6 @@
     "build:demo": "vite build --config vite.config.demo.js",
     "preview": "vite preview",
     "test": "vitest run",
-    "prepublishOnly": "npm run build",
     "release": "npm run build && npm publish"
   },
   "keywords": [
@@ -64,7 +62,5 @@
     "vite": "^7.3.0",
     "vitest": "^4.0.16"
   },
-  "dependencies": {
-    "html-to-image": "^1.11.13"
-  }
+  "dependencies": {}
 }
