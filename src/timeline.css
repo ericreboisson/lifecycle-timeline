@@ -208,6 +208,13 @@
     color: #ffffff;
 }
 
+.lt-status-fictive {
+    background-color: #94a3b8;
+    /* slate-400 */
+    color: #ffffff;
+    opacity: 0.8;
+}
+
 .lt-track-container {
     flex-grow: 1;
     position: relative;
@@ -273,12 +280,17 @@
     opacity: 0.8;
 }
 
+.lt-is-fictive-bar {
+    filter: desaturate(1) opacity(0.4);
+    background: #94a3b8 !important;
+}
+
 /* Grid Lines Container */
 .lt-grid-lines-container {
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 96px;
+    left: 106px;
     right: 0;
 
     pointer-events: none;
@@ -291,7 +303,7 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    left: 96px;
+    left: 106px;
     right: 0;
     pointer-events: none;
     z-index: 20;
@@ -465,6 +477,14 @@
     background-color: var(--accent-eol);
 }
 
+.lt-legend-block.future .lt-legend-icon {
+    background-color: var(--current-date);
+}
+
+.lt-legend-block.fictive .lt-legend-icon {
+    background-color: #94a3b8;
+}
+
 /* Toolbar & Filters */
 .lt-toolbar {
     display: flex;
@@ -595,6 +615,20 @@
 /* Highlight EOL */
 [class*="lt-highlight-eol"] .lt-bar-segment,
 [class*="lt-highlight-eol"] .lt-version-label:not(.lt-status-expired) {
+    opacity: 0.3;
+    filter: grayscale(0.5);
+}
+
+/* Highlight Future */
+[class*="lt-highlight-future"] .lt-bar-segment:not(.lt-is-future-oss),
+[class*="lt-highlight-future"] .lt-version-label:not(.lt-status-is-future) {
+    opacity: 0.3;
+    filter: grayscale(0.5);
+}
+
+/* Highlight Fictive */
+[class*="lt-highlight-fictive"] .lt-bar-segment:not(.lt-is-fictive-bar),
+[class*="lt-highlight-fictive"] .lt-version-label:not(.lt-status-fictive) {
     opacity: 0.3;
     filter: grayscale(0.5);
 }
@@ -779,19 +813,30 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.lt-table-badge.status-oss {
+.lt-table-badge.lt-status-oss {
     background-color: var(--accent-oss);
     color: #000000;
 }
 
-.lt-table-badge.status-ent {
+.lt-table-badge.lt-status-ent {
     background-color: var(--accent-ent);
     color: #000000;
 }
 
-.lt-table-badge.status-expired {
+.lt-table-badge.lt-status-expired {
     background-color: var(--accent-eol);
     color: #ffffff;
+}
+
+.lt-table-badge.lt-status-is-future {
+    background-color: var(--current-date);
+    color: #ffffff;
+}
+
+.lt-table-badge.lt-status-fictive {
+    background-color: #94a3b8;
+    color: #ffffff;
+    opacity: 0.8;
 }
 
 .lt-past-date {

@@ -13,7 +13,9 @@ const DEFAULT_TRANSLATIONS: Record<string, Record<string, string>> = {
         eolDesc: "End of life. No further updates are provided.",
         today: "Today's date: {date}",
         branch: "Branch", initial: "Initial Release", ossEnd: "End OSS", entEnd: "End Enterprise *",
-        majorOnly: "Major versions only"
+        majorOnly: "Major versions only",
+        future: "Future Version", futureDesc: "Planned version not yet released.",
+        fictive: "Fictive Version", fictiveDesc: "Disabled or representative version."
     },
     fr: {
         filter: "Filtrer les versions...", oss: "Support OSS", ent: "Support Entreprise",
@@ -24,7 +26,9 @@ const DEFAULT_TRANSLATIONS: Record<string, Record<string, string>> = {
         eolDesc: "Version en fin de vie. Plus de mises à jour.",
         today: "Date du jour : {date}",
         branch: "Version", initial: "Sortie initiale", ossEnd: "Fin OSS", entEnd: "Fin Entreprise *",
-        majorOnly: "Versions majeures uniquement"
+        majorOnly: "Versions majeures uniquement",
+        future: "Version future", futureDesc: "Version prévue non encore sortie.",
+        fictive: "Version fictive", fictiveDesc: "Version désactivée ou indicative."
     }
 };
 
@@ -118,8 +122,16 @@ export default class Timeline {
         this.root.classList.toggle('lt-mode-compact', this.compactMode);
         this.root.setAttribute('data-theme', this.theme);
 
-        // Merge default translations with custom ones
-        this.translations = { ...DEFAULT_TRANSLATIONS, ...(options.i18n || {}) };
+        // Merge default translations with custom ones (deep merge per language)
+        this.translations = { ...DEFAULT_TRANSLATIONS };
+        if (options.i18n) {
+            Object.keys(options.i18n).forEach(lang => {
+                this.translations[lang] = {
+                    ...(this.translations[lang] || this.translations.en || {}),
+                    ...(options.i18n![lang] || {})
+                };
+            });
+        }
         this.locale = options.locale || this.detectLanguage();
 
         this.setupBaseLayout();
@@ -190,19 +202,11 @@ export default class Timeline {
         this.render();
     }
 
-    /**
-     * Validates the input data.
-     * @param data - The data array to validate.
-     * @returns The validated and filtered data array.
-     */
     validateData(data: TimelineVersion[]): TimelineVersion[] {
-        return data.filter((item, index) => {
-            const required: (keyof TimelineVersion)[] = ['version', 'ossStart', 'ossEnd'];
-            const missing = required.filter(key => !item[key]);
-
-            if (missing.length > 0) {
-                console.warn(`[Timeline] Missing fields for item at index ${index}: ${missing.join(', ')}`);
-                return false;
+        return data.filter((item) => {
+            if (!item.ossStart || !item.ossEnd) {
+                // Allow date-less versions (treated as fictive)
+                return true;
             }
 
             const dates = (['ossStart', 'ossEnd', 'enterpriseEnd'] as (keyof TimelineVersion)[]).filter(k => item[k]);
@@ -228,10 +232,18 @@ export default class Timeline {
             return;
         }
 
-        const allDates = this.data.flatMap(d => [
-            new Date(d.ossStart).getTime(),
-            new Date(d.enterpriseEnd || d.ossEnd).getTime()
-        ]);
+        const allDates = this.data
+            .filter(d => d.ossStart && d.ossEnd)
+            .flatMap(d => [
+                new Date(d.ossStart!).getTime(),
+                new Date(d.enterpriseEnd || d.ossEnd!).getTime()
+            ]);
+
+        if (allDates.length === 0) {
+            this.minYear = this.currentDate.getFullYear() - 1;
+            this.maxYear = this.currentDate.getFullYear() + 3;
+            return;
+        }
         this.minYear = new Date(Math.min(...allDates)).getFullYear();
         this.maxYear = new Date(Math.max(...allDates)).getFullYear();
     }
@@ -263,11 +275,12 @@ export default class Timeline {
     createTableRow(item: TimelineVersion): { el: HTMLElement; version: string; versionOriginal: string } {
         const row = this.el('tr', '', this.tableBody);
 
-        // Status color
-        const now = Date.now(), s = new Date(item.ossStart).getTime(), e = new Date(item.ossEnd).getTime();
+        const now = Date.now();
+        const s = item.ossStart ? new Date(item.ossStart).getTime() : 0, e = item.ossEnd ? new Date(item.ossEnd).getTime() : 0;
         const ent = item.enterpriseEnd ? new Date(item.enterpriseEnd).getTime() : e;
 
-        const statusClass = item.isFuture ? 'lt-status-is-future' : (now >= s && now <= e ? 'lt-status-oss' : (now > e && now <= ent ? 'lt-status-ent' : (now > ent ? 'lt-status-expired' : '')));
+        const isFictive = item.isFictive || !item.ossStart || !item.ossEnd;
+        const statusClass = isFictive ? 'lt-status-fictive' : (item.isFuture ? 'lt-status-is-future' : (now >= s && now <= e ? 'lt-status-oss' : (now > e && now <= ent ? 'lt-status-ent' : (now > ent ? 'lt-status-expired' : ''))));
 
         const branchCell = this.el('td', '', row);
         let badgeContent = `<span class="lt-table-badge ${statusClass}">${item.version}</span>`;
@@ -279,16 +292,16 @@ export default class Timeline {
         }
 
         const initialCell = this.el('td', '', row);
-        initialCell.textContent = item.ossStart;
-        if (now > s) initialCell.className = 'lt-past-date';
+        initialCell.textContent = item.ossStart || '-';
+        if (item.ossStart && now > s) initialCell.className = 'lt-past-date';
 
-        const ossCell = this.el('td', '', row);
-        ossCell.textContent = item.ossEnd;
-        if (now > e) ossCell.className = 'lt-past-date';
+        const ossEndCell = this.el('td', '', row);
+        ossEndCell.textContent = item.ossEnd || '-';
+        if (item.ossEnd && now > e) ossEndCell.className = 'lt-past-date';
 
-        const entCell = this.el('td', '', row);
-        entCell.textContent = item.enterpriseEnd || item.ossEnd;
-        if (now > ent) entCell.className = 'lt-past-date';
+        const entEndCell = this.el('td', '', row);
+        entEndCell.textContent = item.enterpriseEnd || item.ossEnd || '-';
+        if ((item.enterpriseEnd || item.ossEnd) && now > ent) entEndCell.className = 'lt-past-date';
 
         return { el: row, version: item.version.toLowerCase(), versionOriginal: item.version };
     }
@@ -506,7 +519,9 @@ export default class Timeline {
         container.setAttribute('role', 'complementary');
         container.setAttribute('aria-label', 'Support Legend');
 
-        ['oss', 'ent', 'eol'].forEach(type => {
+        const legendItems = ['oss', 'ent', 'eol', 'future', 'fictive'];
+
+        legendItems.forEach(type => {
             const item = this.el('div', `lt-legend-block ${type === 'ent' ? 'commercial' : type}`, container);
             item.classList.add('lt-legend-item-reactive');
             if (this.activeHighlight === type) item.classList.add('lt-active-highlight');
@@ -529,7 +544,7 @@ export default class Timeline {
         this.activeHighlight = this.activeHighlight === type ? null : type;
 
         // Reset classes on the root element
-        this.root.classList.remove('lt-highlight-oss', 'lt-highlight-ent', 'lt-highlight-eol');
+        this.root.classList.remove('lt-highlight-oss', 'lt-highlight-ent', 'lt-highlight-eol', 'lt-highlight-future', 'lt-highlight-fictive');
 
         if (this.activeHighlight) {
             this.root.classList.add(`lt-highlight-${this.activeHighlight}`);
@@ -579,10 +594,11 @@ export default class Timeline {
         const label = this.el('div', 'lt-version-label', row);
         label.setAttribute('role', 'rowheader');
 
-        // Status Logic
-        const now = Date.now(), s = new Date(item.ossStart).getTime(), e = new Date(item.ossEnd).getTime();
+        const now = Date.now();
+        const s = item.ossStart ? new Date(item.ossStart).getTime() : 0, e = item.ossEnd ? new Date(item.ossEnd).getTime() : 0;
         const ent = item.enterpriseEnd ? new Date(item.enterpriseEnd).getTime() : e;
-        const statusClass = item.isFuture ? 'lt-status-is-future' : (now < s ? 'lt-status-future' : (now >= s && now <= e ? 'lt-status-oss' : (now > e && now <= ent ? 'lt-status-ent' : (now > ent ? 'lt-status-expired' : ''))));
+        const isFictive = item.isFictive || !item.ossStart || !item.ossEnd;
+        const statusClass = isFictive ? 'lt-status-fictive' : (item.isFuture ? 'lt-status-is-future' : (now < s ? 'lt-status-future' : (now >= s && now <= e ? 'lt-status-oss' : (now > e && now <= ent ? 'lt-status-ent' : (now > ent ? 'lt-status-expired' : '')))));
         if (statusClass) label.classList.add(statusClass);
 
         if (item.isMajor) {
@@ -603,16 +619,33 @@ export default class Timeline {
         const track = this.el('div', 'lt-track-container', row);
         track.setAttribute('role', 'gridcell');
 
+        const isFictiveDateLess = !item.ossStart || !item.ossEnd;
+
+        if (isFictiveDateLess) {
+            // Skip bars for versions without dates
+            return { el: row, version: item.version.toLowerCase(), versionOriginal: item.version, isMajor: item.isMajor };
+        }
+
         const entStart = (this.splitSupport ? item.ossEnd : item.ossStart) as string;
 
         // EOL Segment (Red)
         const endSupport = (item.enterpriseEnd || item.ossEnd) as string;
         const eolEnd = new Date(this.maxYear, 11, 31).toISOString().split('T')[0];
 
-        track.appendChild(this.createBar(item, endSupport, eolEnd, 'lt-bar-eol', this.t('eol')));
-        track.appendChild(this.createBar(item, entStart, (item.enterpriseEnd || item.ossEnd) as string, 'lt-bar-ent', this.t('ent')));
-        const ossBar = this.createBar(item, item.ossStart, item.ossEnd, 'lt-bar-oss', this.t('oss'));
-        if (item.isFuture) ossBar.classList.add('lt-is-future-oss');
+        const eolBar = this.createBar(item, endSupport, eolEnd, 'lt-bar-eol', this.t('eol'));
+        const entBar = this.createBar(item, entStart, (item.enterpriseEnd || item.ossEnd) as string, 'lt-bar-ent', this.t('ent'));
+        const ossBar = this.createBar(item, item.ossStart!, item.ossEnd!, 'lt-bar-oss', this.t('oss'));
+
+        if (item.isFictive) {
+            eolBar.classList.add('lt-is-fictive-bar');
+            entBar.classList.add('lt-is-fictive-bar');
+            ossBar.classList.add('lt-is-fictive-bar');
+        } else if (item.isFuture) {
+            ossBar.classList.add('lt-is-future-oss');
+        }
+
+        track.appendChild(eolBar);
+        track.appendChild(entBar);
         track.appendChild(ossBar);
 
         return { el: row, version: item.version.toLowerCase(), versionOriginal: item.version, isMajor: item.isMajor };

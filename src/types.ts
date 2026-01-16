@@ -1,11 +1,12 @@
 export interface TimelineVersion {
     version: string;
-    ossStart: string;
-    ossEnd: string;
+    ossStart?: string;
+    ossEnd?: string;
     enterpriseEnd?: string;
     releaseNotesUrl?: string;
     isMajor?: boolean;
     isFuture?: boolean;
+    isFictive?: boolean;
 }
 
 export interface TimelineOptions {
