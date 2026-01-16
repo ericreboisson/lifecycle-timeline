@@ -206,6 +206,7 @@ export default class Timeline {
         return data.filter((item) => {
             if (!item.ossStart || !item.ossEnd) {
                 // Allow date-less versions (treated as fictive)
+                item.isFictive = true;
                 return true;
             }
 

@@ -2,8 +2,6 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import Timeline from './timeline';
 
 describe('Timeline Component', () => {
-    let element: HTMLElement | null;
-
     const mockData = [
         {
             version: '1.0.0',
@@ -15,7 +13,6 @@ describe('Timeline Component', () => {
 
     beforeEach(() => {
         document.body.innerHTML = '<div id="timeline"></div>';
-        element = document.getElementById('timeline');
     });
 
     it('should initialize correctly with valid data', () => {
@@ -25,21 +22,26 @@ describe('Timeline Component', () => {
         expect(timeline.maxYear).toBe(2025);
     });
 
-    it('should validate and filter out invalid data', () => {
-        const invalidData = [
+    it('should validate data and handle missing dates as fictive', () => {
+        const testData = [
             ...mockData,
-            { version: '2.0.0' } as any, // Missing dates
-            { version: '3.0.0', ossStart: 'invalid', ossEnd: '2024-01-01' } as any // Invalid date
+            { version: '2.0.0' } as any, // Missing dates -> should be kept as fictive
+            { version: '3.0.0', ossStart: 'invalid', ossEnd: '2024-01-01' } as any // Invalid date format -> should be filtered
         ];
 
         // Mock console.warn to avoid cluttering output
         const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => { });
 
         const timeline = new Timeline('timeline', []);
-        const validated = timeline.validateData(invalidData);
+        const validated = timeline.validateData(testData);
 
-        expect(validated.length).toBe(1);
-        expect(warnSpy).toHaveBeenCalledTimes(2);
+        // Should have 2 items: 1.0.0 (valid) and 2.0.0 (fictive due to missing dates)
+        expect(validated.length).toBe(2);
+        expect(validated[1].version).toBe('2.0.0');
+        expect(validated[1].isFictive).toBe(true);
+
+        // Should have warned only for invalid date in 3.0.0 (dateless is now supported as fictive)
+        expect(warnSpy).toHaveBeenCalledTimes(1);
 
         warnSpy.mockRestore();
     });
