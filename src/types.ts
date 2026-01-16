@@ -5,6 +5,7 @@ export interface TimelineVersion {
     enterpriseEnd?: string;
     releaseNotesUrl?: string;
     isMajor?: boolean;
+    isFuture?: boolean;
 }
 
 export interface TimelineOptions {

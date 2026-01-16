@@ -203,6 +203,11 @@
     border: 1px solid var(--border-color);
 }
 
+.lt-status-is-future {
+    background-color: var(--current-date);
+    color: #ffffff;
+}
+
 .lt-track-container {
     flex-grow: 1;
     position: relative;
@@ -244,6 +249,10 @@
 [data-theme="dark"] .lt-bar-oss {
     /* Dark mode gradient adjustment */
     background: linear-gradient(to bottom, #a7f3d0 0%, var(--accent-oss) 100%);
+}
+
+.lt-bar-oss.lt-is-future-oss {
+    background: linear-gradient(to bottom, #7dd3fc 0%, var(--current-date) 100%);
 }
 
 

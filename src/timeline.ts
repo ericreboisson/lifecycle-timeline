@@ -267,7 +267,7 @@ export default class Timeline {
         const now = Date.now(), s = new Date(item.ossStart).getTime(), e = new Date(item.ossEnd).getTime();
         const ent = item.enterpriseEnd ? new Date(item.enterpriseEnd).getTime() : e;
 
-        const statusClass = now >= s && now <= e ? 'lt-status-oss' : (now > e && now <= ent ? 'lt-status-ent' : (now > ent ? 'lt-status-expired' : ''));
+        const statusClass = item.isFuture ? 'lt-status-is-future' : (now >= s && now <= e ? 'lt-status-oss' : (now > e && now <= ent ? 'lt-status-ent' : (now > ent ? 'lt-status-expired' : '')));
 
         const branchCell = this.el('td', '', row);
         let badgeContent = `<span class="lt-table-badge ${statusClass}">${item.version}</span>`;
@@ -582,7 +582,7 @@ export default class Timeline {
         // Status Logic
         const now = Date.now(), s = new Date(item.ossStart).getTime(), e = new Date(item.ossEnd).getTime();
         const ent = item.enterpriseEnd ? new Date(item.enterpriseEnd).getTime() : e;
-        const statusClass = now < s ? 'lt-status-future' : (now >= s && now <= e ? 'lt-status-oss' : (now > e && now <= ent ? 'lt-status-ent' : (now > ent ? 'lt-status-expired' : '')));
+        const statusClass = item.isFuture ? 'lt-status-is-future' : (now < s ? 'lt-status-future' : (now >= s && now <= e ? 'lt-status-oss' : (now > e && now <= ent ? 'lt-status-ent' : (now > ent ? 'lt-status-expired' : ''))));
         if (statusClass) label.classList.add(statusClass);
 
         if (item.isMajor) {
@@ -611,7 +611,9 @@ export default class Timeline {
 
         track.appendChild(this.createBar(item, endSupport, eolEnd, 'lt-bar-eol', this.t('eol')));
         track.appendChild(this.createBar(item, entStart, (item.enterpriseEnd || item.ossEnd) as string, 'lt-bar-ent', this.t('ent')));
-        track.appendChild(this.createBar(item, item.ossStart, item.ossEnd, 'lt-bar-oss', this.t('oss')));
+        const ossBar = this.createBar(item, item.ossStart, item.ossEnd, 'lt-bar-oss', this.t('oss'));
+        if (item.isFuture) ossBar.classList.add('lt-is-future-oss');
+        track.appendChild(ossBar);
 
         return { el: row, version: item.version.toLowerCase(), versionOriginal: item.version, isMajor: item.isMajor };
     }
